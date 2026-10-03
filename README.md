@@ -1,5 +1,7 @@
 # zentriboy.de – Braun GmbH
 
+[![CI](https://github.com/Rambo8i/zentriboy-redesign/actions/workflows/ci.yml/badge.svg)](https://github.com/Rambo8i/zentriboy-redesign/actions/workflows/ci.yml)
+
 Redesign der Website der Braun GmbH (Werkzeugbau in Fridingen an der Donau) mit den eigenen Produkten
 **ZentriBoy** und **Tensiometer**. Konzept, Art Direction und Architektur: siehe [KONZEPT.md](KONZEPT.md).
 
@@ -16,9 +18,23 @@ npm run check      # Typprüfung (astro check)
 Node 22.12 oder neuer (Astro 7), empfohlen ist Node 24 laut `.nvmrc` (`nvm use`). Der Build ist vollständig
 statisch (HTML, CSS, JS, Bilder) und läuft auf jedem Webspace.
 
+## Mitarbeit (GitHub)
+
+- **`main` ist geschützt:** Änderungen kommen über Pull Requests. Gemergt wird erst, wenn die CI („Build“:
+  `npm ci`, `npm run check`, `npm run build`) grün ist. Force-Push und Löschen von `main` sind gesperrt.
+- **Ablauf:** Branch anlegen (`feat/…`, `fix/…`, `docs/…`, `chore/…`), committen, Pull Request öffnen, nach grüner CI
+  per Squash mergen. Der Branch wird danach automatisch gelöscht.
+- **Commit-Nachrichten** nach [Conventional Commits](https://www.conventionalcommits.org/de/v1.0.0/), z. B.
+  `feat: Tensiometer-Visualisierung ergänzen` oder `fix: Überlauf im Hero bei 1024 px`.
+- **Dependabot** öffnet montags Pull Requests für npm-Updates (Minor/Patch gebündelt) und monatlich für GitHub
+  Actions. Sicherheitsupdates kommen sofort. Die CI prüft jeden dieser Pull Requests.
+- **Sicherheit:** Secret Scanning mit Push-Schutz ist aktiv, Schwachstellen bitte vertraulich melden
+  (siehe [SECURITY.md](SECURITY.md)).
+
 ## Deployment
 
-- Inhalt von `dist/` hochladen.
+- Inhalt von `dist/` hochladen. Jeder CI-Lauf legt den fertigen Build als Artefakt `dist` ab (7 Tage, im Reiter
+  **Actions** beim jeweiligen Lauf), das lässt sich direkt hochladen.
 - `public/.htaccess` (Apache) leitet die alten Adressen dauerhaft weiter (`/company.html`, `/product1.html`,
   `/zentriboy.html`, `/tensiometer.html`, `/impressum.htm`, `/related.html`, `/Imgp…_jpg_view.htm`) und setzt Cache-Header.
   Auf anderen Servern die Weiterleitungen entsprechend übernehmen.
@@ -118,6 +134,7 @@ src/
   assets/       Fotos (werden beim Build optimiert), generated/ = KI-Visualisierungen
 public/         Dateien ohne Verarbeitung (.htaccess, favicon, robots.txt)
 docs/quelle/    Export der alten Website (Inhaltsquelle)
+.github/        CI-Workflow, Dependabot, Pull-Request-Vorlage
 ```
 
 ## Lizenz
