@@ -1,0 +1,59 @@
+---
+/**
+ * Diaformschleifen: Pantograph (Prinzip). Der Taster folgt der vergrößerten Zeichnung,
+ * der Diamant überträgt die Kontur verkleinert. Mit der Maus selbst führbar (visuals/pantograph.ts).
+ */
+import { formProfile, scalePoints, toPath } from '@/lib/geometry';
+
+const profile = formProfile();
+const template = scalePoints(profile, 440, 440, 56, 262);
+const templatePath = toPath(template);
+// Fläche unter der Kontur (Werkstoffseite) für die Schraffur
+const areaPath = `${templatePath}L496 470L56 470Z`;
+const pivot = { x: 744, y: 58 };
+---
+
+<figure class="panto" data-visual="pantograph" data-cursor="trace" data-pivot={`${pivot.x},${pivot.y}`} data-ratio="0.25">
+  <svg class="drawing" viewBox="0 0 800 520" role="img" aria-label="Pantograph: Ein Taster folgt einer vergrößerten Zeichnung, der Diamant überträgt die Kontur verkleinert">
+    <defs>
+      <pattern id="panto-hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)" class="d-hatch">
+        <line x1="0" y1="0" x2="0" y2="10"></line>
+      </pattern>
+    </defs>
+    <path d={areaPath} fill="url(#panto-hatch)" opacity="0.5"></path>
+    <path class="d-body pa-template" d={templatePath}></path>
+    <text class="d-label d-label--muted" x="56" y="500">Zeichnung, vergrößert</text>
+
+    <path class="d-thin pa-ghost" d=""></path>
+    <path class="d-accent pa-copy" d=""></path>
+    <text class="d-label d-label--muted pa-copy-label" x="520" y="206">Kontur am Diamanten</text>
+
+    <line class="pa-arm" x1={pivot.x} y1={pivot.y} x2={pivot.x} y2={pivot.y}></line>
+    <circle class="d-fill" cx={pivot.x} cy={pivot.y} r="9"></circle>
+    <circle class="d-solid" cx={pivot.x} cy={pivot.y} r="3"></circle>
+    <text class="d-label d-label--muted" x={pivot.x - 104} y={pivot.y - 20}>Drehpunkt</text>
+
+    <g class="pa-diamond">
+      <rect class="d-fill" x="-7" y="-7" width="14" height="14" transform="rotate(45)"></rect>
+    </g>
+    <g class="pa-stylus">
+      <circle class="d-fill" r="10"></circle>
+      <circle class="d-accent-fill" r="3.5"></circle>
+    </g>
+  </svg>
+  <script type="application/json" class="pa-data" set:html={JSON.stringify(template)} />
+</figure>
+
+<style>
+  .panto {
+    position: relative;
+    touch-action: pan-y;
+  }
+
+  .pa-arm {
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+</style>

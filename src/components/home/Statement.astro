@@ -1,0 +1,60 @@
+---
+/**
+ * Haltung: ein großer Absatz, der sich beim Scrollen Wort für Wort „einliest“.
+ * Zwei echte Werkstattfotos stehen als Inline-Bilder im Satz.
+ */
+import { Image } from 'astro:assets';
+import { workById } from '@/data/works';
+
+const star = workById('0222');
+const milling = workById('0289');
+---
+
+<section class="statement" data-theme="paper" data-module="statement" aria-label="Über uns">
+  <div class="statement__grid grid wrap">
+    <p class="statement__text t-statement">
+      Wir sind ein Werkzeugbau in Fridingen an der Donau. Wir fertigen Werkzeuge
+      <span class="inline-photo" data-inline-photo
+        ><Image src={star.image} alt="" width={260} loading="lazy" decoding="async" /></span
+      > und Vorrichtungen, bearbeiten auf CNC-Maschinen, erodieren und schleifen Profile: nach Zeichnung und auf Maß
+      <span class="inline-photo" data-inline-photo
+        ><Image src={milling.image} alt="" width={260} loading="lazy" decoding="async" /></span
+      >. Und weil Präzision nicht an der Werkstatttür aufhört, bauen wir auch zwei Werkzeuge für Laufräder.
+    </p>
+  </div>
+</section>
+
+<style>
+  .statement {
+    position: relative;
+    padding-block: clamp(7rem, 16vw, 14rem) clamp(6rem, 12vw, 11rem);
+  }
+
+  .statement__text {
+    grid-column: 3 / span 9;
+    text-wrap: pretty;
+  }
+
+  .inline-photo {
+    display: inline-block;
+    width: 2.35em;
+    height: 0.8em;
+    margin-inline: 0.06em;
+    vertical-align: -0.06em;
+    overflow: hidden;
+    background: var(--bg-3);
+  }
+
+  .inline-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--photo-filter);
+  }
+
+  @media (max-width: 1023px) {
+    .statement__text {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

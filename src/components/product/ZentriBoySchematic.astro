@@ -1,0 +1,113 @@
+---
+/**
+ * ZentriBoy – Prinzipdarstellung (Ansicht von vorn), gezeichnet nach den Originalfotos:
+ * Klemme an der Gabelscheide, Arm, Messuhr, deren Messbolzen seitlich an der Felgenflanke anliegt.
+ * Animation (visuals/zentriboy.ts): Festklemmen → Zentrieren (Felge schlägt seitlich, Nadel folgt) → Ablesen.
+ */
+const r = (n: number) => Math.round(n * 100) / 100;
+const face = { x: 360, y: 196, r: 74 };
+const ticks = Array.from({ length: 40 }, (_, i) => {
+  const a = (i / 40) * Math.PI * 2 - Math.PI / 2;
+  const long = i % 5 === 0;
+  const r1 = face.r - 6;
+  const r2 = face.r - (long ? 18 : 12);
+  return {
+    x1: r(face.x + Math.cos(a) * r1),
+    y1: r(face.y + Math.sin(a) * r1),
+    x2: r(face.x + Math.cos(a) * r2),
+    y2: r(face.y + Math.sin(a) * r2),
+    long,
+  };
+});
+---
+
+<svg class="drawing schem schem--zb" viewBox="0 0 640 560" data-steps-visual="zentriboy" role="img" aria-label="Prinzipdarstellung ZentriBoy: Klemme an der Gabel, Messuhr mit Messbolzen an der Felge">
+  <defs>
+    <pattern id="zb-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)" class="d-hatch">
+      <line x1="0" y1="0" x2="0" y2="8"></line>
+    </pattern>
+  </defs>
+
+  <!-- Gabelscheide -->
+  <line class="d-axis" x1="168" y1="8" x2="168" y2="552"></line>
+  <path class="d-fill" d="M148 20H188L184 540H152Z"></path>
+
+  <!-- Arm (fest mit der Klemme verbunden) -->
+  <path class="d-body" d="M204 300H352V274"></path>
+  <rect class="d-fill" x="340" y="262" width="24" height="16"></rect>
+
+  <!-- Klemme: zwei Backen um das Rohr, Rändelschraube links -->
+  <g class="zb-clamp">
+    <g class="zb-jaw zb-jaw--l">
+      <path class="d-fill" d="M168 258C128 258 118 282 118 300C118 318 128 342 168 342V330C152 330 150 316 150 300C150 284 152 270 168 270Z"></path>
+    </g>
+    <g class="zb-jaw zb-jaw--r">
+      <path class="d-fill" d="M168 258C208 258 218 282 218 300C218 318 208 342 168 342V330C184 330 186 316 186 300C186 284 184 270 168 270Z"></path>
+    </g>
+    <circle class="d-fill" cx="168" cy="258" r="6"></circle>
+    <line class="d-body" x1="118" y1="300" x2="76" y2="300"></line>
+    <g class="zb-knob">
+      <rect class="d-solid" x="52" y="282" width="26" height="36" rx="5"></rect>
+      <line class="zb-knob-mark" x1="65" y1="286" x2="65" y2="314"></line>
+    </g>
+  </g>
+
+  <!-- Messuhr -->
+  <g class="zb-gauge">
+    <circle class="d-fill" cx={face.x} cy={face.y} r={face.r + 8}></circle>
+    <circle class="d-body" cx={face.x} cy={face.y} r={face.r}></circle>
+    {ticks.map((t) => <line class={t.long ? 'zb-tick zb-tick--l' : 'zb-tick'} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
+    <path class="d-accent-fill zb-tol" d={`M${face.x - 26} ${face.y - face.r - 10}l6 10l6 -10z M${face.x + 14} ${face.y - face.r - 10}l6 10l6 -10z`}></path>
+    <g class="zb-needle">
+      <line class="zb-needle-line" x1={face.x} y1={face.y + 12} x2={face.x} y2={face.y - face.r + 16}></line>
+    </g>
+    <circle class="d-solid" cx={face.x} cy={face.y} r="5"></circle>
+    <!-- Messbolzen nach rechts zur Felge -->
+    <rect class="d-fill" x={face.x + face.r + 8} y={face.y - 9} width="26" height="18"></rect>
+    <g class="zb-plunger">
+      <line class="d-body" x1={face.x + face.r + 34} y1={face.y} x2="476" y2={face.y}></line>
+      <circle class="d-accent-fill" cx="478" cy={face.y} r="4"></circle>
+    </g>
+    <text class="d-label zb-read" x={face.x + 40} y={face.y + face.r + 62} text-anchor="middle">&plusmn;0,00 mm</text>
+  </g>
+
+  <!-- Felge (Schnitt), Reifen, Speichen -->
+  <g class="zb-rim">
+    <ellipse class="d-body" cx="497" cy="118" rx="27" ry="44"></ellipse>
+    <path d="M482 164H512L514 200L508 232H486L480 200Z" fill="url(#zb-hatch)"></path>
+    <path class="d-body" d="M482 164H512L514 200L508 232H486L480 200Z"></path>
+    <line class="d-thin" x1="491" y1="232" x2="470" y2="552"></line>
+    <line class="d-thin" x1="503" y1="232" x2="524" y2="552"></line>
+    <line class="d-axis" x1="497" y1="60" x2="497" y2="552"></line>
+  </g>
+
+  <!-- Beschriftung -->
+  <g class="zb-labels">
+    <text class="d-label d-label--muted" x="196" y="48">Gabel</text>
+    <text class="d-label zb-l-clamp" x="40" y="370">Klemme</text>
+    <text class="d-label zb-l-gauge" x="248" y="92">Messuhr</text>
+    <text class="d-label zb-l-rim" x="530" y="210">Felge</text>
+  </g>
+</svg>
+
+<style>
+  .zb-tick {
+    stroke: currentColor;
+    stroke-width: 0.9;
+  }
+
+  .zb-tick--l {
+    stroke-width: 1.6;
+  }
+
+  .zb-needle-line {
+    stroke: var(--accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  .zb-knob-mark {
+    stroke: var(--bg);
+    stroke-width: 2;
+  }
+</style>

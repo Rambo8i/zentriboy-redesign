@@ -1,0 +1,60 @@
+/* Raster und Ebenen */
+
+.wrap {
+  padding-inline: var(--margin);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+main {
+  position: relative;
+  display: block;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section);
+}
+
+/* Elemente, die über dem Laufrad (WebGL-Bühne) liegen */
+.above-stage {
+  position: relative;
+  z-index: var(--z-above-stage);
+}
+
+/* Themenwelten für Sektionen */
+[data-theme] {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* Fotos: Belege, keine Stimmungsbilder – entsättigt, Farbe bei Interaktion */
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-3);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--photo-filter);
+  transition: filter 0.9s var(--ease-out);
+}
+
+.photo:hover img,
+.photo:focus-within img,
+.photo.is-color img {
+  filter: none;
+}

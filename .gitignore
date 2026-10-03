@@ -1,0 +1,24 @@
+# Abhängigkeiten und Build
+node_modules/
+dist/
+.astro/
+
+# Umgebungsvariablen (nie einchecken)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Betriebssystem und Editoren
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Lokale Claude-Code-Einstellungen (launch.json ist bewusst geteilt)
+.claude/settings.local.json

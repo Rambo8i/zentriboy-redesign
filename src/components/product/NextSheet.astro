@@ -1,0 +1,79 @@
+---
+/** Abschluss einer Seite: großer Link zum nächsten Blatt (Produkt oder Seite). */
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  href: string;
+  name: string;
+  note: string;
+  expand?: boolean;
+}
+
+const { href, name, note, expand = true } = Astro.props;
+---
+
+<section class="next" aria-label="Weiter">
+  <a class="next__link wrap" href={href} data-cursor="view" data-transition={expand ? 'expand' : undefined}>
+    <span class="next__note t-mono t-muted">{note}</span>
+    <span class="next__name">
+      <span class="next__text">{name}</span>
+      <span class="next__knob" data-magnetic="0.3"><Icon name="arrow-right" size="42%" /></span>
+    </span>
+  </a>
+</section>
+
+<style>
+  .next {
+    position: relative;
+    z-index: var(--z-above-stage);
+    border-top: 1px solid var(--line);
+  }
+
+  .next__link {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(4rem, 9vw, 8rem);
+  }
+
+  .next__name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .next__text {
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: clamp(2.75rem, 9vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    transition: transform 0.9s var(--ease-out);
+  }
+
+  .next__knob {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: clamp(4rem, 8vw, 8rem);
+    aspect-ratio: 1;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    transition:
+      background-color 0.4s,
+      color 0.4s,
+      border-color 0.4s;
+  }
+
+  .next__link:hover .next__text,
+  .next__link:focus-visible .next__text {
+    transform: translateX(1.5vw);
+  }
+
+  .next__link:hover .next__knob,
+  .next__link:focus-visible .next__knob {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111312;
+  }
+</style>

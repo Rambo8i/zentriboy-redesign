@@ -1,0 +1,77 @@
+---
+/** Ruhiges Lese-Layout für Impressum und Datenschutz: große Überschrift, schmale Spalte. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} theme="paper">
+  <article class="legal wrap">
+    <h1 class="legal__title t-display t-display--x" data-reveal="chars">{title}</h1>
+    <div class="legal__body prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    padding-block: calc(var(--header-h) + clamp(3rem, 8vw, 7rem)) clamp(5rem, 10vw, 9rem);
+  }
+
+  .legal__title {
+    grid-column: 1 / -1;
+    font-size: clamp(2.75rem, 8vw, 9rem);
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .legal__body {
+    grid-column: 4 / span 7;
+    display: grid;
+    gap: 1.25rem;
+    font-size: var(--fs-body);
+    line-height: 1.62;
+    hyphens: auto;
+  }
+
+  .legal__body :global(h2) {
+    margin-top: 2.25rem;
+    font-size: var(--fs-h3);
+    font-weight: 640;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .legal__body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .legal__body :global(ul) {
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .legal__body :global(.note) {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--accent);
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 1023px) {
+    .legal__body {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

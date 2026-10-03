@@ -1,0 +1,135 @@
+/*
+ * Schritte mit Prinzipzeichnung (ZentriBoy, Tensiometer).
+ * Standard (Mobil, reduzierte Bewegung, ohne JS): alle Schritte sichtbar, Zeichnung daneben bzw. darüber.
+ * Gepinnt und überblendet nur mit JS, erlaubter Bewegung und ab 1024 px.
+ */
+
+.steps {
+  position: relative;
+  z-index: var(--z-above-stage);
+}
+
+.steps__pin {
+  position: relative;
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(5rem, 9vw, 8rem) var(--margin);
+}
+
+.steps__nav {
+  display: none;
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+  color: var(--fg-muted);
+}
+
+.steps__nav li {
+  transition: color 0.4s;
+}
+
+.steps__nav li.is-active {
+  color: var(--accent-text);
+}
+
+.steps__list {
+  display: grid;
+  gap: 3rem;
+  list-style: none;
+  padding: 0;
+}
+
+.steps__item {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.steps__verb {
+  font-size: clamp(2.25rem, 5.6vw, 6.5rem);
+  white-space: nowrap;
+}
+
+.steps__text {
+  max-width: 26ch;
+}
+
+.steps__aside {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .steps__pin {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+  }
+
+  .steps__pin > * {
+    min-width: 0;
+  }
+
+  .steps__visual {
+    grid-column: 6 / -1;
+    grid-row: 1 / span 2;
+  }
+
+  .steps__list,
+  .steps__aside {
+    grid-column: 1 / span 5;
+  }
+
+  /* Mit Bewegung: gepinnt, Schritte liegen übereinander, der aktive ist sichtbar */
+  .motion-ok:not(.app-failed) .steps__pin {
+    display: block;
+    height: 100svh;
+    min-height: 40rem;
+    padding: calc(var(--header-h) + 2rem) var(--margin) 3rem;
+    overflow: hidden;
+  }
+
+  .motion-ok:not(.app-failed) .steps__nav {
+    display: flex;
+  }
+
+  .motion-ok:not(.app-failed) .steps__visual {
+    position: absolute;
+    right: var(--margin);
+    top: 50%;
+    width: min(56vw, 104svh);
+    transform: translateY(-50%);
+  }
+
+  .motion-ok:not(.app-failed) .steps__list {
+    position: absolute;
+    left: var(--margin);
+    bottom: 10svh;
+    width: min(40vw, 36rem);
+    height: 16rem;
+  }
+
+  .motion-ok:not(.app-failed) .steps__item {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    opacity: 0;
+    transform: translateY(2.5rem);
+    transition:
+      opacity 0.45s,
+      transform 0.9s var(--ease-out);
+    pointer-events: none;
+  }
+
+  .motion-ok:not(.app-failed) .steps__item.is-active {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .motion-ok:not(.app-failed) .steps__aside {
+    position: absolute;
+    left: var(--margin);
+    top: calc(var(--header-h) + 5.5rem);
+  }
+}

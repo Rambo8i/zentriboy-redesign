@@ -1,0 +1,19 @@
+# Textdateien im Repository immer mit LF, auch unter Windows
+* text=auto eol=lf
+
+# Binärdateien nie umwandeln
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.mp4 binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+# Lockfile in Pull Requests eingeklappt anzeigen
+package-lock.json linguist-generated=true

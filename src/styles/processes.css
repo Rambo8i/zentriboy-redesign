@@ -1,0 +1,326 @@
+/*
+ * Verfahren (Startseite).
+ * Standard (Mobil, reduzierte Bewegung, ohne JS): Blätter untereinander – alles erreichbar.
+ * Die Horizontalfahrt gibt es nur mit JS, erlaubter Bewegung und ab 1024 px (Block unten).
+ */
+
+.procs__intro {
+  padding-block: clamp(4rem, 9vw, 8rem) clamp(3rem, 6vw, 5rem);
+}
+
+.procs__title {
+  max-width: 14ch;
+}
+
+.procs__pin {
+  position: relative;
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding: clamp(4.5rem, 8vw, 7rem) var(--margin) clamp(4rem, 7vw, 6rem);
+  overflow: hidden;
+}
+
+.panel__name {
+  font-size: clamp(3rem, 7.4vw, 8.5rem);
+  font-weight: 760;
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+  hyphens: manual;
+}
+
+.panel__name--condensed {
+  font-stretch: 62%;
+  font-weight: 820;
+  font-size: clamp(3.5rem, 16.5vw, 19rem);
+  letter-spacing: -0.02em;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+.panel__name--x {
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: clamp(2.75rem, 6.2vw, 7rem);
+  letter-spacing: -0.04em;
+}
+
+.panel__text {
+  max-width: 26ch;
+}
+
+.panel__col,
+.panel__foot {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.panel--vor {
+  background: var(--bg-2);
+}
+
+.panel--vor .panel__col {
+  order: -1;
+}
+
+.panel--cnc .panel__photo {
+  width: min(60%, 22rem);
+  justify-self: end;
+}
+
+.panel--ero .panel__visual {
+  width: min(100%, 30rem);
+  justify-self: center;
+}
+
+.panel__ghost-wrap,
+.procs__meter,
+.panel__hint {
+  display: none;
+}
+
+.panel__ghost {
+  font-stretch: 125%;
+  font-weight: 820;
+  font-size: clamp(5rem, 17vw, 20rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--fg) 22%, transparent);
+}
+
+.procs__meter-label {
+  min-width: 13ch;
+  text-align: right;
+}
+
+.procs__meter-bar {
+  position: relative;
+  display: block;
+  width: 16vw;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.procs__meter-fill {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.procs__after {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+/* Desktop ohne Bewegung: gestapelt, aber zweispaltig komponiert */
+@media (min-width: 1024px) {
+  .panel {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+  }
+
+  .panel > * {
+    grid-column: 1 / span 5;
+    min-width: 0;
+  }
+
+  .panel > .panel__visual {
+    grid-column: 7 / -1;
+    grid-row: 1 / span 3;
+  }
+
+  .panel > .panel__photo {
+    grid-column: 1 / span 3;
+    justify-self: start;
+    width: 100%;
+  }
+
+  .panel--ero .panel__visual {
+    width: min(100%, 34rem);
+  }
+}
+
+/* Desktop mit Bewegung: Horizontalfahrt, jedes Blatt 100 vw × 100 svh, frei komponiert */
+@media (min-width: 1024px) {
+  .motion-ok:not(.app-failed) .procs__pin {
+    overflow: hidden;
+  }
+
+  .motion-ok:not(.app-failed) .procs__track {
+    display: flex;
+    width: max-content;
+  }
+
+  .motion-ok:not(.app-failed) .panel {
+    display: block;
+    flex: none;
+    width: 100vw;
+    height: 100svh;
+    min-height: 40rem;
+    padding: 0;
+  }
+
+  .motion-ok:not(.app-failed) .panel__name {
+    position: absolute;
+    white-space: nowrap;
+  }
+
+  .motion-ok:not(.app-failed) .panel__name--x {
+    white-space: normal;
+  }
+
+  .motion-ok:not(.app-failed) .panel__text,
+  .motion-ok:not(.app-failed) .panel__visual,
+  .motion-ok:not(.app-failed) .panel__col,
+  .motion-ok:not(.app-failed) .panel__foot,
+  .motion-ok:not(.app-failed) .panel__photo {
+    position: absolute;
+  }
+
+  .motion-ok:not(.app-failed) .panel__col .panel__name,
+  .motion-ok:not(.app-failed) .panel__col .panel__text,
+  .motion-ok:not(.app-failed) .panel__foot .panel__text {
+    position: static;
+  }
+
+  /* Werkzeugbau */
+  .motion-ok:not(.app-failed) .panel--wzb .panel__name {
+    left: var(--margin);
+    top: calc(var(--header-h) + 1.5vh);
+  }
+
+  .motion-ok:not(.app-failed) .panel--wzb .panel__visual {
+    right: 6vw;
+    bottom: 5vh;
+    width: min(40vw, 62vh);
+  }
+
+  .motion-ok:not(.app-failed) .panel--wzb .panel__text {
+    left: var(--margin);
+    bottom: 8vh;
+  }
+
+  /* Vorrichtungen: 4:3-Foto vertikal mittig, ohne transform (den besitzt die Parallaxe) */
+  .motion-ok:not(.app-failed) .panel--vor .panel__visual {
+    --vw: min(52vw, 100vh);
+    left: calc(var(--margin) + 2vw);
+    top: calc(52% - var(--vw) * 0.375);
+    width: var(--vw);
+  }
+
+  .motion-ok:not(.app-failed) .panel--vor .panel__col {
+    right: var(--margin);
+    top: calc(var(--header-h) + 6vh);
+    width: 36vw;
+    gap: 2.5rem;
+  }
+
+  /* CNC */
+  .motion-ok:not(.app-failed) .panel--cnc .panel__name {
+    left: var(--margin);
+    top: calc(var(--header-h) + 2vh);
+  }
+
+  .motion-ok:not(.app-failed) .panel--cnc .panel__visual {
+    left: 50%;
+    top: 55%;
+    width: min(58vw, 105vh);
+    transform: translate(-44%, -50%);
+  }
+
+  .motion-ok:not(.app-failed) .panel--cnc .panel__photo {
+    right: 5vw;
+    top: calc(var(--header-h) + 3vh);
+    width: 17vw;
+  }
+
+  .motion-ok:not(.app-failed) .panel--cnc .panel__text {
+    left: var(--margin);
+    bottom: 8vh;
+  }
+
+  /* Erodieren: gestufte Schnittkante zum hellen Blatt davor */
+  .motion-ok:not(.app-failed) .panel--ero {
+    overflow: visible;
+  }
+
+  .motion-ok:not(.app-failed) .panel--ero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -7vw;
+    width: 7.05vw;
+    background: var(--bg);
+    clip-path: polygon(100% 0, 58% 0, 58% 14%, 82% 14%, 82% 33%, 30% 33%, 30% 51%, 70% 51%, 70% 69%, 12% 69%, 12% 86%, 48% 86%, 48% 100%, 100% 100%);
+  }
+
+  .motion-ok:not(.app-failed) .panel__ghost-wrap {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .motion-ok:not(.app-failed) .panel--ero .panel__visual {
+    left: 50%;
+    top: 50%;
+    width: min(74vh, 44vw);
+    transform: translate(-50%, -48%);
+  }
+
+  .motion-ok:not(.app-failed) .panel--ero .panel__name {
+    left: var(--margin);
+    top: calc(var(--header-h) + 2vh);
+  }
+
+  .motion-ok:not(.app-failed) .panel--ero .panel__text {
+    right: var(--margin);
+    bottom: 8vh;
+  }
+
+  /* Diaformschleifen */
+  .motion-ok:not(.app-failed) .panel--dia .panel__name {
+    left: var(--margin);
+    top: calc(var(--header-h) + 2vh);
+  }
+
+  .motion-ok:not(.app-failed) .panel--dia .panel__visual {
+    right: 3vw;
+    top: 52%;
+    width: min(56vw, 100vh);
+    transform: translateY(-50%);
+  }
+
+  .motion-ok:not(.app-failed) .panel__foot {
+    left: var(--margin);
+    bottom: 8vh;
+  }
+
+  .motion-ok:not(.app-failed) .panel__hint {
+    display: block;
+  }
+
+  /* Fortschritt der Fahrt */
+  .motion-ok:not(.app-failed) .procs__meter {
+    position: absolute;
+    left: 50%;
+    bottom: 3.2vh;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #fff;
+    mix-blend-mode: difference;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+}

@@ -1,0 +1,126 @@
+---
+/** Eigener Cursor (persistent). Logik in lib/cursor.ts, nur auf feinen Zeigern aktiv. */
+---
+
+<div class="cursor" transition:persist="cursor" aria-hidden="true" data-state="default">
+  <div class="cursor__ring">
+    <span class="cursor__disc"></span>
+    <span class="cursor__label"></span>
+  </div>
+  <div class="cursor__dot"></div>
+</div>
+
+<style>
+  .cursor {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-cursor);
+    display: none;
+    pointer-events: none;
+  }
+
+  :global(.has-cursor) .cursor {
+    display: block;
+  }
+
+  .cursor__ring,
+  .cursor__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .cursor:global(.is-visible) .cursor__ring,
+  .cursor:global(.is-visible) .cursor__dot {
+    opacity: 1;
+  }
+
+  .cursor__dot::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: #fff;
+    mix-blend-mode: difference;
+    transition: transform 0.35s var(--ease-out);
+  }
+
+  .cursor__dot {
+    mix-blend-mode: difference;
+  }
+
+  .cursor__ring {
+    mix-blend-mode: difference;
+  }
+
+  .cursor__disc {
+    position: absolute;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: -1.125rem 0 0 -1.125rem;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background: transparent;
+    transition:
+      transform 0.55s var(--ease-out),
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+
+  .cursor__label {
+    position: absolute;
+    transform: translate(-50%, -50%) scale(0.6);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #111312;
+    opacity: 0;
+    transition:
+      opacity 0.25s,
+      transform 0.45s var(--ease-out);
+  }
+
+  /* Links: Ring weitet sich, Punkt verschwindet */
+  .cursor[data-state='link'] .cursor__disc {
+    transform: scale(1.6);
+  }
+
+  .cursor[data-state='link'] .cursor__dot::before {
+    transform: scale(0);
+  }
+
+  /* Kontext mit Beschriftung: gefüllter Signalkreis, keine Mischung */
+  .cursor:global(.has-label) .cursor__ring {
+    mix-blend-mode: normal;
+  }
+
+  .cursor:global(.has-label) .cursor__disc {
+    transform: scale(2.7);
+    background: var(--c-signal-bright);
+    border-color: var(--c-signal-bright);
+  }
+
+  .cursor:global(.has-label) .cursor__label {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .cursor:global(.has-label) .cursor__dot::before {
+    transform: scale(0);
+  }
+
+  .cursor:global(.is-pressed) .cursor__disc {
+    transform: scale(0.8);
+  }
+
+  .cursor:global(.has-label.is-pressed) .cursor__disc {
+    transform: scale(2.4);
+  }
+</style>

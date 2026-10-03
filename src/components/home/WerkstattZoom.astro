@@ -1,0 +1,170 @@
+---
+/**
+ * Aus der Werkstatt: Zoom-Parallaxe aus echten Werkstattfotos.
+ * Das Mittelbild wächst, die übrigen fliegen in drei Tiefenebenen auseinander.
+ * Die Fotos sind 640 px breit; das Mittelbild kommt als KI-Hochskalierung (2880 px),
+ * damit es auch auf zwei Drittel der Bildschirmbreite gestochen scharf bleibt.
+ */
+import { Picture } from 'astro:assets';
+import ArrowLink from '../ui/ArrowLink.astro';
+import { workById } from '@/data/works';
+
+const center = workById('0455');
+const centerImage = center.hires ?? center.image;
+const centerWidths = [640, 960, 1280, 1920, 2560].filter((w) => w <= centerImage.width);
+// Unten links bleibt frei für Überschrift und Link.
+const around = [
+  { work: workById('0086'), x: -36, y: -30, w: 17, depth: 1.25 },
+  { work: workById('0224'), x: 33, y: -34, w: 13, depth: 0.9 },
+  { work: workById('0333'), x: 38, y: 12, w: 19, depth: 1.4 },
+  { work: workById('0291'), x: -31, y: 3, w: 12, depth: 1.05 },
+  { work: workById('0298'), x: 4, y: 39, w: 14, depth: 0.8 },
+  { work: workById('0336'), x: 21, y: 40, w: 10, depth: 1.2 },
+  { work: workById('0209'), x: 9, y: -44, w: 12, depth: 0.7 },
+];
+---
+
+<section class="wz" data-theme="graphite" data-module="werkstatt-zoom" aria-labelledby="wz-title">
+  <div class="wz__stage">
+    <div class="wz__field">
+      {
+        around.map((a) => (
+          <div
+            class="wz__item photo"
+            data-depth={a.depth}
+            style={`--x:${a.x}vw;--y:${a.y}vh;--w:${a.w}vw`}
+          >
+            <Picture src={a.work.image} alt={a.work.alt} formats={['avif', 'webp']} widths={[320, 480]} sizes={`${a.w + 8}vw`} loading="lazy" decoding="async" />
+          </div>
+        ))
+      }
+      <div class="wz__center photo">
+        <Picture src={centerImage} alt={center.alt} formats={['avif', 'webp']} widths={centerWidths} sizes="(min-width: 1024px) 68vw, 90vw" loading="lazy" decoding="async" />
+      </div>
+    </div>
+
+    <div class="wz__copy">
+      <h2 id="wz-title" class="wz__title t-display t-display--x" data-reveal="lines">Aus der Werkstatt.</h2>
+      <p class="wz__lead t-lead" data-reveal="lines" data-reveal-delay="0.15">
+        Frästeile, Vorrichtungen, Einzelstücke: echte Aufnahmen aus unserer Fertigung.
+      </p>
+      <div data-reveal="rise" data-reveal-delay="0.3">
+        <ArrowLink href="/werkstatt" label="Alle Beispiele" cursor="view" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wz {
+    position: relative;
+  }
+
+  .wz__stage {
+    position: relative;
+    height: 100svh;
+    min-height: 40rem;
+    overflow: hidden;
+  }
+
+  .wz__field {
+    position: absolute;
+    inset: 0;
+  }
+
+  .wz__item,
+  .wz__center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+  }
+
+  /* Zentrierung über Ränder statt transform – den Transform besitzt GSAP */
+  .wz__item {
+    left: calc(50% + var(--x));
+    top: calc(50% + var(--y));
+    width: var(--w);
+    aspect-ratio: 4 / 3;
+    margin: calc(var(--w) * -0.375) 0 0 calc(var(--w) * -0.5);
+  }
+
+  .wz__center {
+    width: 26vw;
+    aspect-ratio: 4 / 3;
+    margin: -9.75vw 0 0 -13vw;
+  }
+
+  .wz__copy {
+    position: absolute;
+    left: var(--margin);
+    bottom: clamp(2rem, 6vh, 4rem);
+    z-index: 2;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 34rem;
+  }
+
+  /* Dezente Abdunklung hinter dem Text – Lesbarkeit vor Bild */
+  .wz__stage::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    width: 55vw;
+    height: 60%;
+    background: radial-gradient(ellipse at 0% 100%, color-mix(in oklab, var(--bg) 88%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .wz__title {
+    font-size: clamp(2.5rem, 5.4vw, 6rem);
+  }
+
+  @media (max-width: 1023px) {
+    .wz__stage {
+      height: auto;
+      min-height: 0;
+      padding: 5rem var(--margin) 4rem;
+      display: grid;
+      gap: 2.5rem;
+    }
+
+    .wz__field {
+      position: relative;
+      inset: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .wz__item,
+    .wz__center {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: auto;
+      margin: 0;
+    }
+
+    .wz__center {
+      grid-column: 1 / -1;
+      order: -1;
+    }
+
+    .wz__item:nth-child(n + 5) {
+      display: none;
+    }
+
+    .wz__copy {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      order: -1;
+    }
+
+    .wz__stage::after {
+      display: none;
+    }
+  }
+</style>

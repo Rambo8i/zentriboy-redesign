@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import Statement from '@/components/home/Statement.astro';
+import Processes from '@/components/home/Processes.astro';
+import WerkstattZoom from '@/components/home/WerkstattZoom.astro';
+import ProductsHome from '@/components/home/ProductsHome.astro';
+import ContactHome from '@/components/home/ContactHome.astro';
+import ArrowLink from '@/components/ui/ArrowLink.astro';
+---
+
+<BaseLayout theme="paper" footerTheme="graphite">
+  <Hero word="ZENTRIERT" title="Zentriert: Braun GmbH, Werkzeugbau in Fridingen an der Donau">
+    <p class="hero__sub t-lead" data-reveal="lines" data-reveal-delay="0.35">
+      Werkzeugbau, Vorrichtungen und CNC-Fertigung aus Fridingen an der Donau. Dazu zwei Werkzeuge, mit denen Ihr
+      Laufrad wieder rund läuft.
+    </p>
+    <div class="hero__links" data-reveal="rise" data-reveal-delay="0.6">
+      <ArrowLink href="/fertigung" label="Fertigung" />
+      <ArrowLink href="/zentriboy" label="ZentriBoy" />
+    </div>
+  </Hero>
+  <Statement />
+  <Processes />
+  <WerkstattZoom />
+  <ProductsHome />
+  <ContactHome />
+</BaseLayout>

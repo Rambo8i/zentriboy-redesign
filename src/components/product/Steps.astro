@@ -1,0 +1,45 @@
+---
+/**
+ * Drei Schritte mit Prinzipzeichnung. Desktop: gepinnt, die Zeichnung läuft mit dem Scroll,
+ * der aktive Schritt wechselt. Mobil: Zeichnung oben, Schritte darunter. Ohne Bewegung: alles sichtbar.
+ */
+// Globales Stylesheet: Die gepinnte Variante hängt an html.motion-ok.
+import '@/styles/steps.css';
+
+interface Props {
+  id: string;
+  title: string;
+  steps: { verb: string; text: string }[];
+}
+
+const { id, title, steps } = Astro.props;
+---
+
+<section class="steps" data-module="steps" aria-labelledby={`${id}-title`}>
+  <div class="steps__pin">
+    <h2 id={`${id}-title`} class="visually-hidden">{title}</h2>
+    <ol class="steps__nav t-mono" aria-hidden="true">
+      {steps.map((s, i) => <li class={i === 0 ? 'is-active' : undefined}>{s.verb}</li>)}
+    </ol>
+
+    <div class="steps__visual">
+      <slot name="visual" />
+    </div>
+
+    <ol class="steps__list" role="list">
+      {
+        steps.map((s, i) => (
+          <li class={`steps__item ${i === 0 ? 'is-active' : ''}`}>
+            <h3 class="steps__verb t-display t-display--x">{s.verb}.</h3>
+            <p class="steps__text t-lead">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="steps__aside">
+      <slot name="aside" />
+    </div>
+  </div>
+</section>
+

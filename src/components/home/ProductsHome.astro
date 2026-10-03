@@ -1,0 +1,358 @@
+---
+/**
+ * Eigene Produkte (Startseite, Werkstatt-Welt).
+ * ZentriBoy: riesige, links angeschnittene Messuhr, deren Nadel die Abweichung der Maus vom Zentrum zeigt.
+ * Tensiometer: eine Speiche quer über die Fläche, zum Zupfen, mit eigener kleiner Messuhr.
+ */
+import DialGauge from '../ui/DialGauge.astro';
+import ArrowLink from '../ui/ArrowLink.astro';
+import { Picture } from 'astro:assets';
+import { products, formatAmount } from '@/data/products';
+import { aiVisuals, aiLabel, visuals } from '@/data/visuals';
+import zentriboyRad from '@/assets/products/zentriboy-rad-1.jpg';
+import tensiometerFoto from '@/assets/products/tensiometer.jpg';
+
+const zb = products.zentriboy;
+const tm = products.tensiometer;
+const zbVisual = visuals.zentriboy;
+---
+
+<section class="prods" data-theme="graphite" aria-labelledby="prods-title">
+  <div class="prods__head wrap">
+    <h2 id="prods-title" class="prods__title t-display" data-reveal="lines">Zwei Werkzeuge<br />für Laufräder.</h2>
+  </div>
+
+  <!-- ZentriBoy -->
+  <article class="zbs" data-module="dial" aria-labelledby="zbs-name">
+    <div class="zbs__dial" data-dial-target data-cursor="trace" data-cursor-label="Messen">
+      <DialGauge stem />
+    </div>
+
+    <div class="zbs__readout" aria-hidden="true">
+      <span class="t-mono t-muted">Abweichung</span>
+      <span class="zbs__value t-num" data-dial-value>&plusmn;0,00 mm</span>
+      <span class="zbs__status t-mono" data-dial-status>Zentriert</span>
+    </div>
+
+    <div class="zbs__content">
+      <h3 id="zbs-name" class="zbs__name t-display t-display--x" data-reveal="chars">{zb.name}</h3>
+      <p class="zbs__q t-h3" data-reveal="lines">{zb.question} <span class="t-accent">{zb.answer}</span></p>
+      <p class="t-body t-muted" data-reveal="lines" data-reveal-delay="0.1">{zb.summary}</p>
+      <p class="zbs__price">
+        <span class="t-num zbs__amount" data-reveal="counter" data-value={formatAmount(zb.price)}>{formatAmount(zb.price)}</span>
+        <span class="zbs__cur">€</span>
+        <span class="t-mono t-muted">{zb.priceNote}</span>
+      </p>
+      <div class="zbs__cta">
+        <ArrowLink href="/zentriboy" label="Zum ZentriBoy" size="lg" transition="expand" cursor="view" />
+      </div>
+      {
+        aiVisuals.enabled ? (
+          <figure class="zbs__visual">
+            <div class="zbs__photo zbs__photo--ai photo" data-reveal="clip">
+              <Picture src={zbVisual.image} alt={zbVisual.alt} formats={['avif', 'webp']} widths={[480, 720, 960]} sizes="(min-width: 1024px) 26rem, 88vw" loading="lazy" decoding="async" />
+            </div>
+            <figcaption class="zbs__caption t-small t-muted">
+              <span class="t-mono t-accent">{aiLabel}</span> Details können vom Produkt abweichen.
+            </figcaption>
+          </figure>
+        ) : (
+          <figure class="zbs__photo photo" data-reveal="clip">
+            <Picture src={zentriboyRad} alt="ZentriBoy mit Messuhr, an der Gabel eines Fahrrads festgeklemmt" formats={['avif', 'webp']} widths={[250]} sizes="250px" loading="lazy" decoding="async" />
+          </figure>
+        )
+      }
+    </div>
+  </article>
+
+  <!-- Tensiometer -->
+  <article class="tms" data-module="spoke" aria-labelledby="tms-name" data-spoke-a="-0.04,0.9" data-spoke-b="1.04,0.12">
+    <canvas class="tms__spoke" aria-hidden="true" data-cursor="pluck"></canvas>
+
+    <div class="tms__content">
+      <h3 id="tms-name" class="tms__name t-display t-display--x" data-reveal="chars">{tm.name}</h3>
+      <p class="tms__q t-h3" data-reveal="lines">{tm.question} <span class="t-accent">{tm.answer}</span></p>
+      <p class="tms__steps" data-reveal="lines" data-reveal-delay="0.1">
+        {
+          tm.steps.map((s, i) => (
+            <Fragment>
+              <span class={i === tm.steps.length - 1 ? 't-accent' : undefined}>{s.verb}.</span>{' '}
+            </Fragment>
+          ))
+        }
+      </p>
+      <p class="tms__price">
+        <span class="t-num tms__amount" data-reveal="counter" data-value={formatAmount(tm.price)}>{formatAmount(tm.price)}</span>
+        <span class="tms__cur">€</span>
+        <span class="t-mono t-muted">{tm.priceNote}</span>
+      </p>
+      <ArrowLink href="/tensiometer" label="Zum Tensiometer" size="lg" transition="expand" cursor="view" />
+    </div>
+
+    <div class="tms__gauge" aria-hidden="true">
+      <div class="tms__dial"><DialGauge counter={false} tolerance={false} /></div>
+      <span class="t-mono t-muted" data-spoke-hint>Speiche ziehen und loslassen</span>
+    </div>
+
+    <figure class="tms__photo photo" data-reveal="clip">
+      <Picture src={tensiometerFoto} alt="Braun Tensiometer mit Messuhr, in eine Speiche eingeklickt" formats={['avif', 'webp']} widths={[250]} sizes="250px" loading="lazy" decoding="async" />
+    </figure>
+    <button class="tms__pluck visually-hidden" type="button" data-spoke-pluck>Speiche anschlagen</button>
+  </article>
+</section>
+
+<style>
+  .prods {
+    position: relative;
+  }
+
+  .prods__head {
+    padding-block: clamp(6rem, 12vw, 11rem) clamp(2rem, 4vw, 3rem);
+  }
+
+  /* ZentriBoy-Szene */
+  .zbs {
+    position: relative;
+    min-height: 118svh;
+    overflow: hidden;
+  }
+
+  .zbs__dial {
+    position: absolute;
+    left: calc(-1 * min(22vw, 34svh));
+    top: 4svh;
+    width: min(88svh, 58vw);
+    touch-action: pan-y;
+  }
+
+  /* Messwert rechts neben der angeschnittenen Uhr, auf Höhe des Messbolzens */
+  .zbs__readout {
+    position: absolute;
+    left: calc(min(88svh, 58vw) - min(22vw, 34svh) + 2.5rem);
+    top: calc(4svh + min(88svh, 58vw) * 0.93);
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .zbs__value {
+    font-size: clamp(2rem, 3.6vw, 3.75rem);
+    line-height: 1;
+  }
+
+  .zbs__status {
+    color: var(--fg-muted);
+    transition: color 0.3s;
+  }
+
+  .zbs__status:global(.is-true) {
+    color: var(--accent-text);
+  }
+
+  .zbs__content {
+    position: relative;
+    margin-left: 50vw;
+    padding: 6svh var(--margin) 10svh 0;
+    display: grid;
+    gap: 1.6rem;
+    max-width: 44rem;
+  }
+
+  .zbs__name {
+    font-size: clamp(3rem, 7.4vw, 8.5rem);
+  }
+
+  .zbs__q {
+    max-width: 20ch;
+  }
+
+  .zbs__price,
+  .tms__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+  }
+
+  .zbs__amount,
+  .tms__amount {
+    font-size: clamp(2.5rem, 4.6vw, 4.75rem);
+    line-height: 1;
+  }
+
+  .zbs__cur,
+  .tms__cur {
+    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+    font-weight: 500;
+  }
+
+  .zbs__photo {
+    width: min(15.6rem, 60%);
+    aspect-ratio: 250 / 153;
+    margin-top: 1.5rem;
+  }
+
+  /*
+   * KI-Visualisierung: größer als das 250-px-Original, Ausschnitt mit Messuhr und Klemme.
+   * Rechtsbündig und höchstens 30 vw breit, damit der Messwert neben der Uhr frei bleibt.
+   */
+  .zbs__visual {
+    justify-self: end;
+    display: grid;
+    gap: 0.6rem;
+    width: min(26rem, 30vw);
+    margin-top: 1.5rem;
+  }
+
+  .zbs__photo--ai {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin-top: 0;
+  }
+
+  .zbs__photo--ai :global(img) {
+    object-position: 48% 50%;
+  }
+
+  .zbs__caption {
+    max-width: 100%;
+  }
+
+  .zbs__caption .t-mono {
+    margin-right: 0.35rem;
+  }
+
+  /* Tensiometer-Szene */
+  .tms {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+  }
+
+  .tms__spoke {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+
+  .tms__content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+    max-width: 62rem;
+    padding: 14svh var(--margin) 16svh;
+    pointer-events: none;
+  }
+
+  .tms__content > :not(.tms__name) {
+    max-width: 36rem;
+  }
+
+  .tms__content :global(a) {
+    pointer-events: auto;
+    justify-self: start;
+  }
+
+  .tms__name {
+    font-size: clamp(2.5rem, 7.4vw, 8.5rem);
+    white-space: nowrap;
+  }
+
+  .tms__steps {
+    font-size: var(--fs-h3);
+    font-weight: 620;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .tms__gauge {
+    position: absolute;
+    right: var(--margin);
+    bottom: 9svh;
+    z-index: 1;
+    display: grid;
+    justify-items: end;
+    gap: 0.9rem;
+    pointer-events: none;
+  }
+
+  .tms__dial {
+    width: clamp(7rem, 11vw, 11rem);
+  }
+
+  .tms__photo {
+    position: absolute;
+    right: calc(var(--margin) + 14vw);
+    top: 16svh;
+    z-index: 1;
+    width: min(15.6rem, 22vw);
+    aspect-ratio: 4 / 3;
+    pointer-events: none;
+  }
+
+  @media (max-width: 1023px) {
+    .zbs {
+      min-height: 0;
+      display: grid;
+    }
+
+    .zbs__visual {
+      justify-self: stretch;
+      width: auto;
+    }
+
+    .zbs__dial {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 118vw;
+      margin-left: -30vw;
+      margin-top: 1rem;
+    }
+
+    .zbs__readout {
+      position: relative;
+      left: auto;
+      top: auto;
+      padding-inline: var(--margin);
+      margin-top: -3rem;
+    }
+
+    .zbs__content {
+      margin-left: 0;
+      padding: 3rem var(--margin) 5rem;
+    }
+
+    .tms__content {
+      padding-top: 5rem;
+      padding-bottom: 22rem;
+    }
+
+    .tms__name,
+    .zbs__name {
+      font-size: calc((100vw - 2 * var(--margin)) / 8.2);
+    }
+
+    .tms__photo {
+      right: var(--margin);
+      top: auto;
+      bottom: 3rem;
+      width: 42vw;
+    }
+
+    .tms__gauge {
+      left: var(--margin);
+      right: auto;
+      bottom: 3rem;
+      justify-items: start;
+    }
+
+    .tms__dial {
+      width: 7rem;
+    }
+  }
+</style>

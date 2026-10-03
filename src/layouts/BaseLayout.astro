@@ -1,0 +1,150 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import 'lenis/dist/lenis.css';
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+import '@/styles/typography.css';
+import '@/styles/layout.css';
+import '@/styles/drawings.css';
+
+import { ClientRouter } from 'astro:transitions';
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Preloader from '@/components/layout/Preloader.astro';
+import Curtain from '@/components/layout/Curtain.astro';
+import Cursor from '@/components/layout/Cursor.astro';
+import { company, site } from '@/data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Materialwelt der Seite: Zeichnung (hell) oder Werkstatt (dunkel) */
+  theme?: 'paper' | 'graphite';
+  /** Farbwelt des Schriftfelds, falls die Seite dunkel endet */
+  footerTheme?: 'paper' | 'graphite';
+  noindex?: boolean;
+}
+
+const { title, description = site.description, theme = 'paper', footerTheme = theme, noindex = false } = Astro.props;
+
+const fullTitle = title ? `${title} | ${site.title}` : `${site.title} | Werkzeugbau, ZentriBoy und Tensiometer`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: company.name,
+  url: Astro.site?.toString(),
+  email: company.email,
+  telephone: company.phone.intl,
+  faxNumber: company.fax.intl,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.street,
+    postalCode: company.postalCode,
+    addressLocality: company.city,
+    addressCountry: company.countryCode,
+  },
+  knowsAbout: company.services,
+};
+---
+
+<!doctype html>
+<html lang="de" transition:animate="none">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content={theme === 'graphite' ? '#111312' : '#e4e6e3'} />
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    <script is:inline define:vars={{ dev: import.meta.env.DEV }}>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Nur in der Entwicklung: ?motion=full erzwingt volle Bewegung (siehe lib/motion.ts)
+        if (dev) {
+          try {
+            var p = new URLSearchParams(location.search).get('motion');
+            if (p) sessionStorage.setItem('zb-motion', p);
+            if (sessionStorage.getItem('zb-motion') === 'full') reduce = false;
+          } catch (e) {}
+        }
+        if (!reduce) d.classList.add('motion-ok');
+        try {
+          if (!reduce && !sessionStorage.getItem('zb-intro')) d.classList.add('is-preloading');
+        } catch (e) {}
+        // Sicherheitsnetz: Startet die App nicht, bleiben alle Inhalte sichtbar.
+        setTimeout(function () {
+          if (!d.classList.contains('app-ready')) {
+            d.classList.add('app-failed');
+            d.classList.remove('is-preloading');
+          }
+        }, 9000);
+      })();
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <ClientRouter />
+  </head>
+
+  <body data-theme={theme}>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+    <Preloader />
+    <Header theme={theme} />
+    <canvas class="stage" transition:persist="stage" aria-hidden="true"></canvas>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer theme={footerTheme} />
+    <Curtain />
+    <Cursor />
+    <div class="grain" transition:persist="grain" aria-hidden="true"></div>
+
+    <script>
+      import '@/scripts/app';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  html:has(body[data-theme='graphite']) {
+    background: var(--c-graphite);
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  /* WebGL-Bühne: fest, transparent, ohne Zeiger */
+  canvas.stage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100lvh;
+    z-index: var(--z-stage);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  canvas.stage.is-flight {
+    z-index: var(--z-stage-flight);
+  }
+</style>

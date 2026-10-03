@@ -1,0 +1,247 @@
+---
+/**
+ * „Im Einsatz“: eine KI-Visualisierung als volle Tafel, darüber eine Videoschleife
+ * (das Rad dreht sich, die Messuhr schlägt aus). Erstes und letztes Videobild entsprechen
+ * dem Standbild, der Wechsel vom Bild zum Video fällt deshalb nicht auf.
+ *
+ * Das Standbild ist der Normalzustand (ohne JS, bei reduzierter Bewegung, im Datensparmodus).
+ * Das Video lädt erst kurz vor Sichtkontakt, spielt nur sichtbar und lässt sich anhalten (WCAG 2.2.2).
+ * Steuerung: modules/plate.ts
+ */
+import { Picture } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import { aiLabel, aiNote, type Visual } from '@/data/visuals';
+
+interface Props {
+  visual: Visual;
+  title: string;
+  text: string;
+}
+
+const { visual, title, text } = Astro.props;
+const { image, video, alt, focus } = visual;
+const widths = [640, 960, 1280, 1920, 2560].filter((w) => w <= image.width);
+---
+
+<section
+  class="plate"
+  data-theme="graphite"
+  data-module="plate"
+  data-fx={focus.x}
+  data-fy={focus.y}
+  aria-labelledby="plate-title"
+  style={`--fx:${focus.x}%;--fy:${focus.y}%`}
+>
+  <figure class="plate__figure">
+    <div class="plate__stage">
+      <div class="plate__media" data-plate-media>
+        <div class="plate__frame" data-plate-frame>
+          <Picture
+            src={image}
+            alt={alt}
+            formats={['avif', 'webp']}
+            widths={widths}
+            sizes="100vw"
+            loading="lazy"
+            decoding="async"
+            class="plate__img"
+          />
+          {
+            video && (
+              <video
+                class="plate__video"
+                data-src={video}
+                muted
+                loop
+                playsinline
+                preload="none"
+                disablepictureinpicture
+                aria-hidden="true"
+                tabindex="-1"
+              />
+            )
+          }
+        </div>
+      </div>
+      <span class="plate__chip t-mono" aria-hidden="true">{aiLabel}</span>
+    </div>
+
+    <figcaption class="plate__caption wrap">
+      <h2 id="plate-title" class="plate__title t-title" data-reveal="lines">{title}</h2>
+      <div class="plate__body">
+        <p class="plate__text t-lead" data-reveal="lines" data-reveal-delay="0.1">{text}</p>
+        <p class="plate__note t-small">
+          <span class="plate__tag t-mono">{aiLabel}</span>
+          {aiNote}
+        </p>
+      </div>
+      {
+        video && (
+          <button type="button" class="plate__toggle" data-plate-toggle data-state="playing" hidden>
+            <span class="plate__icon plate__icon--pause">
+              <Icon name="pause" size="1.1em" />
+            </span>
+            <span class="plate__icon plate__icon--play">
+              <Icon name="play" size="1.1em" />
+            </span>
+            <span data-plate-label>Video anhalten</span>
+          </button>
+        )
+      }
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .plate {
+    position: relative;
+    z-index: var(--z-above-stage);
+    padding-top: clamp(2rem, 5vw, 5rem);
+    background: var(--bg);
+  }
+
+  .plate__stage {
+    position: relative;
+  }
+
+  .plate__media {
+    position: relative;
+    aspect-ratio: 2752 / 1536;
+    max-height: 100svh;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+
+  .plate__frame {
+    position: absolute;
+    inset: 0;
+  }
+
+  .plate__frame :global(img),
+  .plate__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--fx) var(--fy);
+  }
+
+  /* Das Video liegt deckungsgleich über dem Standbild und blendet erst ein, wenn es läuft */
+  .plate__video {
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+  }
+
+  .plate:global(.is-playing) .plate__video {
+    opacity: 1;
+  }
+
+  .plate__chip {
+    position: absolute;
+    left: var(--margin);
+    bottom: clamp(0.75rem, 1.6vw, 1.5rem);
+    padding: 0.4rem 0.65rem 0.35rem;
+    color: var(--c-light);
+    background: color-mix(in oklab, var(--c-graphite) 78%, transparent);
+    pointer-events: none;
+  }
+
+  .plate__caption {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: 1.5rem;
+    align-items: start;
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(5rem, 10vw, 9rem);
+  }
+
+  .plate__title {
+    grid-column: 1 / span 5;
+    max-width: 12ch;
+  }
+
+  .plate__body {
+    grid-column: 6 / span 5;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .plate__text {
+    max-width: 34ch;
+  }
+
+  .plate__note {
+    max-width: 48ch;
+    color: var(--fg-muted);
+  }
+
+  .plate__tag {
+    margin-right: 0.4rem;
+    color: var(--accent-text);
+  }
+
+  .plate__toggle {
+    grid-column: 11 / -1;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    transition: border-color var(--dur-fast);
+  }
+
+  .plate__toggle[hidden] {
+    display: none;
+  }
+
+  .plate__toggle:hover {
+    border-color: var(--accent);
+  }
+
+  .plate__toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .plate__icon {
+    display: inline-flex;
+  }
+
+  .plate__toggle[data-state='paused'] .plate__icon--pause,
+  .plate__toggle[data-state='playing'] .plate__icon--play {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .plate__title,
+    .plate__body,
+    .plate__toggle {
+      grid-column: 1 / -1;
+    }
+
+    .plate__toggle {
+      justify-self: start;
+    }
+  }
+
+  /* Hochformat: quadratischer Ausschnitt, Messuhr und Klemme bleiben im Bild */
+  @media (max-width: 700px) {
+    .plate__media {
+      aspect-ratio: 1 / 1;
+    }
+
+    .plate__frame :global(img),
+    .plate__video {
+      object-position: 45% 50%;
+    }
+  }
+</style>

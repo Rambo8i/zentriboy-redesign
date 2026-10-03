@@ -1,0 +1,99 @@
+---
+/**
+ * Fünf Verfahren als Horizontalfahrt (Desktop, gepinnt) bzw. als Stapel (Mobil).
+ * Jedes Blatt hat eine eigene Komposition. Beim Erodieren wechselt die Seite in die Werkstatt:
+ * Ab hier ist sie dunkel (der einzige Themenwechsel der Startseite).
+ */
+import PunchVisual from '../process/PunchVisual.astro';
+import FixtureVisual from '../process/FixtureVisual.astro';
+import ToolpathVisual from '../process/ToolpathVisual.astro';
+import EdmVisual from '../process/EdmVisual.astro';
+import PantographVisual from '../process/PantographVisual.astro';
+import Photo from '../ui/Photo.astro';
+import ArrowLink from '../ui/ArrowLink.astro';
+import { processes } from '@/data/processes';
+import { workById } from '@/data/works';
+// Globales Stylesheet: Die Varianten hängen an html.motion-ok (siehe Kopf der Datei).
+import '@/styles/processes.css';
+
+const byId = Object.fromEntries(processes.map((p) => [p.id, p]));
+const milling = workById('0289');
+---
+
+<section class="procs" data-module="processes" aria-labelledby="procs-title">
+  <div class="procs__intro wrap" data-theme="paper">
+    <h2 id="procs-title" class="procs__title t-display" data-reveal="lines">
+      Fünf Verfahren.<br />Eine Werkstatt.
+    </h2>
+  </div>
+
+  <div class="procs__pin">
+    <div class="procs__track">
+      <!-- Werkzeugbau -->
+      <article class="panel panel--wzb" data-theme="paper" aria-labelledby="p-wzb" data-panel-label={byId.werkzeugbau.name}>
+        <h3 id="p-wzb" class="panel__name panel__name--condensed" data-depth="0.18">{byId.werkzeugbau.name}</h3>
+        <div class="panel__visual" data-depth="-0.08">
+          <PunchVisual id="home-punch" />
+        </div>
+        <p class="panel__text t-lead">{byId.werkzeugbau.short}</p>
+      </article>
+
+      <!-- Vorrichtungen -->
+      <article class="panel panel--vor" data-theme="paper" aria-labelledby="p-vor" data-panel-label={byId.vorrichtungen.name}>
+        <div class="panel__visual" data-depth="-0.05">
+          <FixtureVisual />
+        </div>
+        <div class="panel__col" data-depth="0.12">
+          <h3 id="p-vor" class="panel__name panel__name--x" set:html={byId.vorrichtungen.display} />
+          <p class="panel__text t-lead">{byId.vorrichtungen.short}</p>
+        </div>
+      </article>
+
+      <!-- CNC -->
+      <article class="panel panel--cnc" data-theme="paper" aria-labelledby="p-cnc" data-panel-label={byId.cnc.name}>
+        <h3 id="p-cnc" class="panel__name" data-depth="0.14">{byId.cnc.name}</h3>
+        <div class="panel__visual">
+          <ToolpathVisual />
+        </div>
+        <div class="panel__photo" data-depth="-0.22">
+          <Photo image={milling.image} alt={milling.alt} sizes="(min-width: 1024px) 20vw, 60vw" ratio="4 / 3" />
+        </div>
+        <p class="panel__text t-lead">{byId.cnc.short}</p>
+      </article>
+
+      <!-- Erodieren: hier schneidet der Draht die Seite ins Dunkle -->
+      <article class="panel panel--ero" data-theme="graphite" aria-labelledby="p-ero" data-panel-label={byId.erodieren.name}>
+        <div class="panel__ghost-wrap" aria-hidden="true">
+          <span class="panel__ghost" data-depth="0.3">{byId.erodieren.name}</span>
+        </div>
+        <div class="panel__visual">
+          <EdmVisual />
+        </div>
+        <h3 id="p-ero" class="panel__name panel__name--x">{byId.erodieren.name}</h3>
+        <p class="panel__text t-lead">{byId.erodieren.short}</p>
+      </article>
+
+      <!-- Diaformschleifen -->
+      <article class="panel panel--dia" data-theme="graphite" aria-labelledby="p-dia" data-panel-label={byId.diaform.name}>
+        <h3 id="p-dia" class="panel__name panel__name--x" data-depth="0.12" set:html={byId.diaform.display} />
+        <div class="panel__visual">
+          <PantographVisual />
+        </div>
+        <div class="panel__foot">
+          <p class="panel__text t-lead">{byId.diaform.short}</p>
+          <p class="panel__hint t-mono t-muted">Den Taster mit der Maus führen</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="procs__meter" aria-hidden="true">
+      <span class="procs__meter-label t-mono">{byId.werkzeugbau.name}</span>
+      <span class="procs__meter-bar"><span class="procs__meter-fill"></span></span>
+    </div>
+  </div>
+
+  <div class="procs__after wrap" data-theme="graphite">
+    <ArrowLink href="/fertigung" label="Alle Verfahren im Detail" size="lg" />
+  </div>
+</section>
+

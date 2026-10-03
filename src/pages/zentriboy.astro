@@ -1,0 +1,127 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import ArrowLink from '@/components/ui/ArrowLink.astro';
+import Photo from '@/components/ui/Photo.astro';
+import Strike from '@/components/product/Strike.astro';
+import Steps from '@/components/product/Steps.astro';
+import ZentriBoySchematic from '@/components/product/ZentriBoySchematic.astro';
+import DataSheet from '@/components/product/DataSheet.astro';
+import NextSheet from '@/components/product/NextSheet.astro';
+import UsePlate from '@/components/product/UsePlate.astro';
+import { products, formatPrice } from '@/data/products';
+import { aiVisuals, visuals } from '@/data/visuals';
+import teile from '@/assets/products/zentriboy-teile.jpg';
+import montiert from '@/assets/products/zentriboy-rad-2.jpg';
+
+const zb = products.zentriboy;
+---
+
+<BaseLayout
+  title="ZentriBoy"
+  description="Der Braun ZentriBoy ersetzt den Zentrierständer vollkommen: direkt am Fahrrad festklemmen und sofort zentrieren. Mit Messuhr, 166,00 € inkl. MwSt."
+  theme="graphite"
+>
+  <Hero word="ZENTRIBOY" title="ZentriBoy: Laufrad zentrieren, ohne es auszubauen" theme="graphite" view="product" variant="product">
+    <p class="hero__sub t-lead" data-reveal="lines" data-reveal-delay="0.35">
+      Direkt am Fahrrad festklemmen und sofort zentrieren. Die Messuhr zeigt jede Abweichung.
+    </p>
+    <div class="hero__links zb-buy" data-reveal="rise" data-reveal-delay="0.6">
+      <p class="zb-buy__price t-num">{formatPrice(zb.price)} <span class="t-mono t-muted">{zb.priceNote}</span></p>
+      <ArrowLink href={zb.orderMail} label="Per E-Mail bestellen" cursor="order" />
+    </div>
+  </Hero>
+
+  <section class="ask wrap" aria-label="Das Problem">
+    <p class="ask__q t-display" data-reveal="lines">{zb.question}</p>
+    <p class="ask__a t-display t-display--x" data-reveal="lines" data-reveal-delay="0.1">{zb.answer}</p>
+    <p class="ask__body t-lead t-muted" data-reveal="lines" data-reveal-delay="0.2">
+      Sehr einfache Bedienung und genaues Arbeiten durch die Messuhr. Sie können keinen Fehler mehr machen, denn die Uhr
+      zeigt Ihnen sofort, wenn etwas „falsch“ läuft.
+    </p>
+  </section>
+
+  <Strike before="Ersetzt den" word="Zentrierständer" after="vollkommen." />
+
+  {
+    aiVisuals.enabled && (
+      <UsePlate
+        visual={visuals.zentriboy}
+        title="Am Rad, nicht im Ständer."
+        text="Klemme an die Gabel, Messuhr an die Felge, Rad drehen: Die Nadel zeigt jeden Seitenschlag, während Sie zentrieren."
+      />
+    )
+  }
+
+  <Steps id="zb-steps" title="So funktioniert der ZentriBoy" steps={zb.steps}>
+    <ZentriBoySchematic slot="visual" />
+    <Fragment slot="aside">
+      <figure class="zb-proof">
+        <Photo image={teile} alt="Einzelteile des ZentriBoy: Klemme mit Rändelschrauben und Messuhr" sizes="170px" ratio="250 / 187" />
+        <figcaption class="t-mono t-muted">Klemme und Messuhr</figcaption>
+      </figure>
+      <figure class="zb-proof">
+        <Photo image={montiert} alt="ZentriBoy an der Gabel montiert, die Messuhr tastet die Felge ab" sizes="170px" ratio="250 / 187" />
+        <figcaption class="t-mono t-muted">Am Rad montiert</figcaption>
+      </figure>
+    </Fragment>
+  </Steps>
+
+  <DataSheet product={zb} />
+  <NextSheet href="/tensiometer" name="Tensiometer" note="Nächstes Werkzeug" />
+</BaseLayout>
+
+<style>
+  .zb-buy {
+    align-items: center;
+  }
+
+  .zb-buy__price {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    line-height: 1;
+  }
+
+  .ask {
+    position: relative;
+    z-index: var(--z-above-stage);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: 2rem;
+    padding-block: clamp(6rem, 14vw, 13rem) clamp(2rem, 4vw, 3rem);
+  }
+
+  .ask__q {
+    grid-column: 1 / span 9;
+    font-size: clamp(2.5rem, 6.4vw, 7.5rem);
+  }
+
+  .ask__a {
+    grid-column: 4 / -1;
+    font-size: clamp(2.5rem, 6.4vw, 7.5rem);
+    color: var(--accent-text);
+  }
+
+  .ask__body {
+    grid-column: 7 / span 5;
+    max-width: 32ch;
+  }
+
+  .zb-proof {
+    display: grid;
+    gap: 0.5rem;
+    width: 10.5rem;
+  }
+
+  @media (max-width: 1023px) {
+    .ask__q,
+    .ask__a,
+    .ask__body {
+      grid-column: 1 / -1;
+    }
+
+    .zb-proof {
+      width: 44%;
+    }
+  }
+</style>

@@ -1,0 +1,340 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { Picture, getImage } from 'astro:assets';
+import { works } from '@/data/works';
+import { seeded } from '@/lib/math';
+
+// Leuchttisch: 5 × 3 Felder, jedes Foto leicht versetzt und unterschiedlich groß
+const rand = seeded(1965);
+const items = await Promise.all(
+  works.map(async (w, i) => {
+    const col = i % 5;
+    const row = Math.floor(i / 5);
+    const width = 20 + Math.round(rand() * 9);
+    // Lightbox: hochskalierte Fassung, wo vorhanden, sonst das 640-px-Original
+    const full = await getImage({ src: w.hires ?? w.image, width: w.hires ? 1600 : 640, format: 'webp' });
+    return {
+      ...w,
+      full: full.src,
+      x: col * 44 + 22 + Math.round((rand() - 0.5) * 12),
+      y: row * 62 + 31 + Math.round((rand() - 0.5) * 14),
+      w: width,
+    };
+  }),
+);
+---
+
+<BaseLayout
+  title="Werkstatt"
+  description="Beispiele aus der Fertigung der Braun GmbH: Frästeile, Vorrichtungen und Einzelstücke aus unserer Werkstatt in Fridingen an der Donau."
+  theme="paper"
+>
+  <section class="wh wrap" aria-labelledby="wh-title">
+    <h1 id="wh-title" class="wh__title t-mega" data-reveal="chars">Werkstatt</h1>
+    <div class="wh__row">
+      <p class="t-lead" data-reveal="lines" data-reveal-delay="0.2">
+        Frästeile, Vorrichtungen und Einzelstücke: {works.length} Aufnahmen aus unserer Fertigung.
+      </p>
+      <div class="wh__views" role="group" aria-label="Ansicht">
+        <button type="button" class="wh__view" data-view="table" aria-pressed="true">Leuchttisch</button>
+        <button type="button" class="wh__view" data-view="grid" aria-pressed="false">Raster</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="lt" data-module="lighttable" data-view="table" aria-label="Werkstattfotos">
+    <div class="lt__viewport" data-cursor="drag">
+      <ul class="lt__plane" role="list">
+        {
+          items.map((it, i) => (
+            <li class="lt__item" style={`--x:${it.x}vw;--y:${it.y}svh;--w:${it.w}vw`}>
+              <button
+                type="button"
+                class="lt__button"
+                data-index={i}
+                data-full={it.full}
+                data-caption={it.caption}
+                data-alt={it.alt}
+                data-cursor="view"
+                aria-label={`${it.caption} vergrößern`}
+              >
+                <span class="lt__photo photo">
+                  <Picture src={it.image} alt={it.alt} formats={['avif', 'webp']} widths={[320, 480, 640]} sizes="(min-width: 1024px) 30vw, 48vw" loading="lazy" decoding="async" />
+                </span>
+                <span class="lt__caption t-mono">{it.caption}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <p class="lt__hint t-mono t-muted" aria-hidden="true">Ziehen, um den Tisch zu verschieben</p>
+
+    <dialog class="lb" aria-labelledby="lb-caption">
+      <div class="lb__inner">
+        <figure class="lb__figure">
+          <img class="lb__img" src="" alt="" width="640" height="480" />
+          <figcaption class="lb__meta">
+            <span id="lb-caption" class="lb__caption t-h3"></span>
+            <span class="lb__count t-mono t-muted"></span>
+          </figcaption>
+        </figure>
+        <div class="lb__controls">
+          <button type="button" class="lb__btn" data-lb="prev"><Icon name="arrow-left" size="1.25rem" /><span class="visually-hidden">Vorheriges Foto</span></button>
+          <button type="button" class="lb__btn" data-lb="next"><Icon name="arrow-right" size="1.25rem" /><span class="visually-hidden">Nächstes Foto</span></button>
+          <button type="button" class="lb__btn lb__btn--close" data-lb="close"><Icon name="x" size="1.25rem" /><span class="visually-hidden">Schließen</span></button>
+        </div>
+      </div>
+    </dialog>
+  </section>
+</BaseLayout>
+
+<style>
+  .wh {
+    padding-block: calc(var(--header-h) + clamp(3rem, 8vw, 7rem)) clamp(2.5rem, 5vw, 4rem);
+    display: grid;
+    gap: 2rem;
+  }
+
+  /* „Werkstatt“ misst 7,75 em (t-mega) */
+  .wh__title {
+    font-size: calc((100vw - 2 * var(--margin)) / 8.05);
+  }
+
+  .wh__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .wh__row .t-lead {
+    max-width: 32ch;
+  }
+
+  .wh__views {
+    display: flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0.25rem;
+  }
+
+  .wh__view {
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+  }
+
+  .wh__view[aria-pressed='true'] {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  /* Leuchttisch */
+  .lt {
+    position: relative;
+    border-top: 1px solid var(--line);
+  }
+
+  .lt__viewport {
+    position: relative;
+    height: 88svh;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .lt__plane {
+    position: relative;
+    width: 220vw;
+    height: 186svh;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .lt__item {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    margin-left: calc(var(--w) * -0.5);
+    margin-top: calc(var(--w) * -0.42);
+  }
+
+  .lt__button {
+    display: grid;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .lt__photo {
+    display: block;
+    aspect-ratio: 4 / 3;
+    transition: transform 0.7s var(--ease-out);
+  }
+
+  .lt__button:hover .lt__photo,
+  .lt__button:focus-visible .lt__photo {
+    transform: scale(1.03);
+  }
+
+  .lt__caption {
+    color: var(--fg-muted);
+  }
+
+  .lt__hint {
+    position: absolute;
+    right: var(--margin);
+    bottom: 1.25rem;
+    pointer-events: none;
+  }
+
+  /* Rasteransicht (und Mobil): versetztes Raster ohne Ziehen */
+  .lt[data-view='grid'] .lt__viewport {
+    height: auto;
+    overflow: visible;
+  }
+
+  .lt[data-view='grid'] .lt__plane {
+    width: auto;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3rem var(--gutter);
+    padding: 3rem var(--margin) 6rem;
+    transform: none !important;
+  }
+
+  .lt[data-view='grid'] .lt__item {
+    position: static;
+    width: auto;
+    margin: 0;
+  }
+
+  .lt[data-view='grid'] .lt__item:nth-child(4n + 2),
+  .lt[data-view='grid'] .lt__item:nth-child(4n + 4) {
+    transform: translateY(3rem);
+  }
+
+  .lt[data-view='grid'] .lt__hint {
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .wh__views {
+      display: none;
+    }
+
+    .lt .lt__viewport {
+      height: auto;
+      overflow: visible;
+    }
+
+    .lt .lt__plane {
+      width: auto;
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem var(--gutter);
+      padding: 2rem var(--margin) 5rem;
+      transform: none !important;
+    }
+
+    .lt .lt__item {
+      position: static;
+      width: auto;
+      margin: 0;
+    }
+
+    .lt .lt__item:nth-child(2n) {
+      transform: translateY(2.5rem);
+    }
+
+    .lt__hint {
+      display: none;
+    }
+  }
+
+  /* Lightbox */
+  .lb {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--c-light);
+    overflow: hidden;
+  }
+
+  .lb::backdrop {
+    background: rgba(11, 12, 12, 0.94);
+  }
+
+  .lb__inner {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    padding: calc(var(--header-h) + 1rem) var(--margin) 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .lb__figure {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 1rem;
+    min-height: 0;
+  }
+
+  .lb__img {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: min(72dvh, 960px);
+    margin: auto;
+    object-fit: contain;
+  }
+
+  .lb__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .lb__controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .lb__btn {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+
+  .lb__btn:hover,
+  .lb__btn:focus-visible {
+    background: var(--c-signal-bright);
+    border-color: var(--c-signal-bright);
+    color: #111312;
+  }
+</style>

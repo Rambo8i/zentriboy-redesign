@@ -1,0 +1,51 @@
+---
+/**
+ * Icons aus Phosphor (Stärke „light“, passend zur Haarlinien-Ästhetik).
+ * Inline als SVG, dekorativ (aria-hidden). Die Bedeutung trägt immer der Text daneben.
+ */
+import arrowRight from '@phosphor-icons/core/light/arrow-right-light.svg?raw';
+import arrowUpRight from '@phosphor-icons/core/light/arrow-up-right-light.svg?raw';
+import arrowLeft from '@phosphor-icons/core/light/arrow-left-light.svg?raw';
+import arrowUp from '@phosphor-icons/core/light/arrow-up-light.svg?raw';
+import arrowDown from '@phosphor-icons/core/light/arrow-down-light.svg?raw';
+import x from '@phosphor-icons/core/light/x-light.svg?raw';
+import plus from '@phosphor-icons/core/light/plus-light.svg?raw';
+import envelope from '@phosphor-icons/core/light/envelope-simple-light.svg?raw';
+import phone from '@phosphor-icons/core/light/phone-light.svg?raw';
+import printer from '@phosphor-icons/core/light/printer-light.svg?raw';
+import mapPin from '@phosphor-icons/core/light/map-pin-light.svg?raw';
+import pause from '@phosphor-icons/core/light/pause-light.svg?raw';
+import play from '@phosphor-icons/core/light/play-light.svg?raw';
+
+const icons = {
+  'arrow-right': arrowRight,
+  'arrow-up-right': arrowUpRight,
+  'arrow-left': arrowLeft,
+  'arrow-up': arrowUp,
+  'arrow-down': arrowDown,
+  x,
+  plus,
+  envelope,
+  phone,
+  printer,
+  'map-pin': mapPin,
+  pause,
+  play,
+} as const;
+
+export type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+  size?: string;
+  class?: string;
+}
+
+const { name, size = '1em', class: cls = '' } = Astro.props;
+const svg = icons[name].replace(
+  '<svg ',
+  `<svg width="${size}" height="${size}" class="icon ${cls}" aria-hidden="true" focusable="false" `,
+);
+---
+
+<Fragment set:html={svg} />

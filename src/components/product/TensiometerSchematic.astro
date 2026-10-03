@@ -1,0 +1,116 @@
+---
+/**
+ * Tensiometer – Prinzipdarstellung, gezeichnet nach dem Originalfoto:
+ * Grundkörper mit zwei Haken, die die Speiche untergreifen, Druckbolzen in der Mitte, Messuhr oben.
+ * Animation (visuals/tensiometer.ts): Einklicken → Ablesen → Vergleichen (mit der mitgelieferten Tabelle).
+ * Die Tabelle ist bewusst ohne Zahlen dargestellt – sie ist Teil des Lieferumfangs, nicht dieser Seite.
+ */
+const r = (n: number) => Math.round(n * 100) / 100;
+const face = { x: 320, y: 112, r: 76 };
+const ticks = Array.from({ length: 40 }, (_, i) => {
+  const a = (i / 40) * Math.PI * 2 - Math.PI / 2;
+  const long = i % 5 === 0;
+  return {
+    x1: r(face.x + Math.cos(a) * (face.r - 6)),
+    y1: r(face.y + Math.sin(a) * (face.r - 6)),
+    x2: r(face.x + Math.cos(a) * (face.r - (long ? 18 : 12))),
+    y2: r(face.y + Math.sin(a) * (face.r - (long ? 18 : 12))),
+    long,
+  };
+});
+const rows = [0.62, 0.48, 0.7, 0.55, 0.66, 0.42, 0.58, 0.5];
+---
+
+<svg class="drawing schem schem--tm" viewBox="0 0 820 520" data-steps-visual="tensiometer" role="img" aria-label="Prinzipdarstellung Tensiometer: an der Speiche eingeklickt, Messuhr ablesen, Wert mit der Tabelle vergleichen">
+  <!-- Gerät: Grundkörper, zwei Haken untergreifen die Speiche -->
+  <g class="tm-device">
+    <path class="d-fill" d="M150 222H490V262H476V372H446V357H462V262H178V357H194V372H164V262H150Z"></path>
+    <rect class="d-fill" x="306" y="196" width="28" height="26"></rect>
+    <g class="tm-plunger">
+      <rect class="d-fill" x="312" y="262" width="16" height="78"></rect>
+    </g>
+    <g class="tm-knob">
+      <circle class="d-solid" cx="430" cy="210" r="16"></circle>
+    </g>
+    <path class="tm-click d-accent" d="M452 190l14 -14M458 204l20 -4M444 180l4 -20"></path>
+
+    <circle class="d-fill" cx={face.x} cy={face.y} r={face.r + 8}></circle>
+    <circle class="d-body" cx={face.x} cy={face.y} r={face.r}></circle>
+    {ticks.map((t) => <line class={t.long ? 'tm-tick tm-tick--l' : 'tm-tick'} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
+    <path class="tm-arc d-accent" d=""></path>
+    <g class="tm-needle">
+      <line class="tm-needle-line" x1={face.x} y1={face.y + 12} x2={face.x} y2={face.y - face.r + 16}></line>
+    </g>
+    <circle class="d-solid" cx={face.x} cy={face.y} r="5"></circle>
+  </g>
+
+  <!-- Speiche (vor dem Gerät, läuft durch die Haken) -->
+  <polyline class="tm-spoke" points="10,352 178,352 320,352 462,352 630,352"></polyline>
+  <text class="d-label d-label--muted" x="16" y="392">Speiche</text>
+
+  <!-- Mitgelieferte Tabelle -->
+  <g class="tm-table">
+    <rect class="d-fill" x="640" y="70" width="164" height="312"></rect>
+    <text class="d-label" x="652" y="96">Wert</text>
+    <text class="d-label" x="724" y="96">Spannung</text>
+    <line class="d-thin" x1="640" y1="108" x2="804" y2="108"></line>
+    <line class="d-thin" x1="712" y1="70" x2="712" y2="382"></line>
+    {
+      rows.map((w, i) => (
+        <g class={`tm-row ${i === 4 ? 'tm-row--hit' : ''}`}>
+          <rect class="tm-bar" x="652" y={126 + i * 31} width={r(48 * (0.55 + (i % 3) * 0.15))} height="8" />
+          <rect class="tm-bar" x="724" y={126 + i * 31} width={r(70 * w)} height="8" />
+        </g>
+      ))
+    }
+    <rect class="tm-hit d-accent" x="644" y={126 + 4 * 31 - 9} width="156" height="26"></rect>
+    <path class="tm-leader d-accent" d="M404 112H560V254H640"></path>
+  </g>
+</svg>
+
+<style>
+  .tm-spoke {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+
+  .tm-tick {
+    stroke: currentColor;
+    stroke-width: 0.9;
+  }
+
+  .tm-tick--l {
+    stroke-width: 1.6;
+  }
+
+  .tm-needle-line {
+    stroke: var(--accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  .tm-bar {
+    fill: currentColor;
+    opacity: 0.28;
+  }
+
+  .tm-row--hit .tm-bar {
+    opacity: 0.85;
+  }
+
+  .tm-hit,
+  .tm-leader {
+    stroke-width: 1.6;
+  }
+
+  .tm-leader {
+    stroke-dasharray: 4 5;
+  }
+
+  .tm-arc {
+    stroke-width: 5;
+    opacity: 0.85;
+  }
+</style>

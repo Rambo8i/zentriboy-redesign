@@ -1,0 +1,52 @@
+---
+/** „Ersetzt den Zentrierständer vollkommen.“ – das Wort wird beim Scrollen rot durchgestrichen. */
+interface Props {
+  before: string;
+  word: string;
+  after: string;
+}
+const { before, word, after } = Astro.props;
+---
+
+<section class="strike wrap" data-module="strike">
+  <p class="strike__text t-display">
+    {before}
+    <span class="strike__word">{word}<span class="strike__line" aria-hidden="true"></span></span>
+    {after}
+  </p>
+  <p class="visually-hidden">Der Zentrierständer wird nicht mehr gebraucht.</p>
+</section>
+
+<style>
+  .strike {
+    position: relative;
+    z-index: var(--z-above-stage);
+    padding-block: clamp(5rem, 12vw, 11rem);
+  }
+
+  .strike__text {
+    font-size: clamp(2.5rem, 7vw, 8rem);
+    max-width: 14ch;
+  }
+
+  .strike__word {
+    position: relative;
+    display: inline-block;
+    color: var(--fg-muted);
+  }
+
+  .strike__line {
+    position: absolute;
+    left: -0.04em;
+    right: -0.04em;
+    top: 52%;
+    height: max(3px, 0.07em);
+    background: var(--accent);
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  :global(.motion-ok) .strike__line {
+    transform: scaleX(0);
+  }
+</style>

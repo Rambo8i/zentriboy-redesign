@@ -1,0 +1,31 @@
+# zentriboy.de – Apache-Konfiguration
+# Alte Namo-Adressen leiten dauerhaft (301) auf die neuen Routen weiter, damit Links und Suchtreffer erhalten bleiben.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Nur externe Aufrufe von /index.html weiterleiten (verhindert eine Schleife mit DirectoryIndex).
+  RewriteCond %{THE_REQUEST} \s/index\.html?[\s?] [NC]
+  RewriteRule ^index\.html?$ / [R=301,L]
+
+  RewriteRule ^company\.html$ /kontakt [R=301,L,NC]
+  RewriteRule ^product1\.html$ /werkstatt [R=301,L,NC]
+  RewriteRule ^tensiometer\.html$ /tensiometer [R=301,L,NC]
+  RewriteRule ^zentriboy\.html$ /zentriboy [R=301,L,NC]
+  RewriteRule ^impressum\.html?$ /impressum [R=301,L,NC]
+  RewriteRule ^related\.html$ / [R=301,L,NC]
+  RewriteRule ^Imgp[0-9]+_jpg_view\.htm$ /werkstatt [R=301,L,NC]
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+  # Gehashte Build-Dateien dürfen dauerhaft gecacht werden.
+  <If "%{REQUEST_URI} =~ m#^/_astro/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>

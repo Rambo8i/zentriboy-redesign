@@ -1,0 +1,113 @@
+---
+/**
+ * Handlungsaufforderung: Text + magnetischer Pfeil-Knopf.
+ * Kreise sind in diesem System ausschließlich interaktive „Knöpfe“ und Messinstrumente.
+ */
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  href: string;
+  label: string;
+  icon?: IconName;
+  size?: 'md' | 'lg';
+  cursor?: string;
+  transition?: 'expand';
+  class?: string;
+  external?: boolean;
+}
+
+const { href, label, icon = 'arrow-right', size = 'md', cursor, transition, class: cls = '', external = false } = Astro.props;
+---
+
+<a
+  class={`alink alink--${size} ${cls}`}
+  href={href}
+  data-magnetic="0.22"
+  data-hover-scramble
+  data-cursor={cursor}
+  data-transition={transition}
+  {...external ? { rel: 'noopener', target: '_blank' } : {}}
+>
+  <span class="alink__text" data-hover-scramble-text>{label}</span>
+  <span class="alink__knob" data-magnetic-inner>
+    <Icon name={icon} class="alink__icon" />
+  </span>
+  {external && <span class="visually-hidden">(öffnet in neuem Fenster)</span>}
+</a>
+
+<style>
+  .alink {
+    --knob: 3.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 560;
+    font-size: 1.0625rem;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    padding-block: 0.25rem;
+    white-space: nowrap;
+  }
+
+  .alink--lg {
+    --knob: clamp(3.5rem, 5vw, 4.75rem);
+    font-size: clamp(1.25rem, 1.5vw, 1.625rem);
+    gap: 1.25rem;
+  }
+
+  .alink__knob {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: var(--knob);
+    height: var(--knob);
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color var(--dur-fast);
+  }
+
+  /* Füllung wächst aus der Mitte – wie ein gedrückter Taster */
+  .alink__knob::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.55s var(--ease-out);
+  }
+
+  .alink :global(.alink__icon) {
+    width: 42%;
+    height: 42%;
+    transition: transform 0.55s var(--ease-out), color var(--dur-fast);
+  }
+
+  .alink:hover .alink__knob,
+  .alink:focus-visible .alink__knob {
+    border-color: var(--accent);
+  }
+
+  .alink:hover .alink__knob::before,
+  .alink:focus-visible .alink__knob::before {
+    transform: scale(1);
+  }
+
+  .alink:hover :global(.alink__icon),
+  .alink:focus-visible :global(.alink__icon) {
+    transform: rotate(-45deg);
+    color: #111312;
+  }
+
+  .alink:active .alink__knob {
+    transform: scale(0.94);
+  }
+
+  .alink__text {
+    display: inline-block;
+  }
+</style>

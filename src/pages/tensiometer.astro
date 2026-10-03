@@ -1,0 +1,187 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArrowLink from '@/components/ui/ArrowLink.astro';
+import DialGauge from '@/components/ui/DialGauge.astro';
+import Photo from '@/components/ui/Photo.astro';
+import Steps from '@/components/product/Steps.astro';
+import TensiometerSchematic from '@/components/product/TensiometerSchematic.astro';
+import DataSheet from '@/components/product/DataSheet.astro';
+import NextSheet from '@/components/product/NextSheet.astro';
+import { products, formatPrice } from '@/data/products';
+import foto from '@/assets/products/tensiometer.jpg';
+
+const tm = products.tensiometer;
+---
+
+<BaseLayout
+  title="Tensiometer"
+  description="Das Braun Tensiometer misst die Speichenspannung: einklicken, Wert ablesen, mit der mitgelieferten Tabelle vergleichen. 145,67 € inkl. MwSt."
+  theme="graphite"
+>
+  <section class="tmh" data-module="spoke" data-spoke-a="-0.03,0.74" data-spoke-b="1.03,0.3" aria-labelledby="tmh-title">
+    <h1 id="tmh-title" class="tmh__title">
+      <span class="visually-hidden">Tensiometer: Speichenspannung messen</span>
+      <span class="tmh__word tmh__word--1" aria-hidden="true" data-reveal="chars">Tensio</span>
+      <span class="tmh__word tmh__word--2" aria-hidden="true" data-reveal="chars" data-reveal-delay="0.15">meter</span>
+    </h1>
+    <canvas class="tmh__spoke" aria-hidden="true" data-cursor="pluck"></canvas>
+
+    <div class="tmh__foot">
+      <p class="tmh__q t-h3" data-reveal="lines">{tm.question} <span class="t-accent">{tm.answer}</span></p>
+      <div class="tmh__buy" data-reveal="rise" data-reveal-delay="0.2">
+        <p class="tmh__price t-num">{formatPrice(tm.price)} <span class="t-mono t-muted">{tm.priceNote}</span></p>
+        <ArrowLink href={tm.orderMail} label="Per E-Mail bestellen" cursor="order" />
+      </div>
+    </div>
+
+    <div class="tmh__gauge" aria-hidden="true">
+      <div class="tmh__dial"><DialGauge counter={false} tolerance={false} /></div>
+      <span class="t-mono t-muted" data-spoke-hint>Speiche ziehen und loslassen</span>
+    </div>
+
+    <div class="tmh__photo" data-reveal="clip">
+      <Photo image={foto} alt="Braun Tensiometer mit Messuhr, in eine Speiche eingeklickt" sizes="250px" ratio="4 / 3" />
+    </div>
+    <button class="visually-hidden" type="button" data-spoke-pluck>Speiche anschlagen</button>
+  </section>
+
+  <Steps id="tm-steps" title="So funktioniert das Tensiometer" steps={tm.steps}>
+    <TensiometerSchematic slot="visual" />
+  </Steps>
+
+  <DataSheet product={tm} />
+  <NextSheet href="/zentriboy" name="ZentriBoy" note="Nächstes Werkzeug" />
+</BaseLayout>
+
+<style>
+  .tmh {
+    position: relative;
+    height: 100svh;
+    min-height: 40rem;
+    overflow: hidden;
+  }
+
+  .tmh__title {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .tmh__word {
+    position: absolute;
+    font-stretch: 125%;
+    font-weight: 830;
+    font-size: clamp(4rem, 17.5vw, 21rem);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Ebenen: Wort 1 unter der Speiche, Wort 2 darüber */
+  .tmh__word--1 {
+    left: var(--margin);
+    top: calc(var(--header-h) + 5svh);
+    z-index: 1;
+  }
+
+  .tmh__word--2 {
+    right: var(--margin);
+    top: calc(var(--header-h) + 5svh + 0.82 * clamp(4rem, 17.5vw, 21rem));
+    z-index: 3;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+  }
+
+  .tmh__spoke {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+
+  .tmh__foot {
+    position: absolute;
+    left: var(--margin);
+    bottom: clamp(2rem, 6svh, 4rem);
+    z-index: 4;
+    display: grid;
+    gap: 1.5rem;
+    max-width: 30rem;
+    pointer-events: none;
+  }
+
+  .tmh__buy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+
+  .tmh__buy :global(a) {
+    pointer-events: auto;
+  }
+
+  .tmh__price {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    line-height: 1;
+  }
+
+  .tmh__gauge {
+    position: absolute;
+    right: var(--margin);
+    bottom: clamp(2rem, 6svh, 4rem);
+    z-index: 4;
+    display: grid;
+    justify-items: end;
+    gap: 0.9rem;
+    pointer-events: none;
+  }
+
+  .tmh__dial {
+    width: clamp(7rem, 10vw, 10rem);
+  }
+
+  .tmh__photo {
+    position: absolute;
+    right: calc(var(--margin) + 13vw);
+    bottom: clamp(2rem, 6svh, 4rem);
+    z-index: 4;
+    width: min(15.6rem, 18vw);
+    pointer-events: none;
+  }
+
+  @media (max-width: 1023px) {
+    .tmh__word {
+      font-size: calc((100vw - 2 * var(--margin)) / 4.9);
+    }
+
+    .tmh__word--2 {
+      top: calc(var(--header-h) + 5svh + 0.82 * (100vw - 2 * var(--margin)) / 4.9);
+    }
+
+    .tmh__photo {
+      display: none;
+    }
+
+    .tmh__foot {
+      right: var(--margin);
+      bottom: 9rem;
+    }
+
+    .tmh__gauge {
+      left: var(--margin);
+      right: auto;
+      bottom: 2rem;
+      justify-items: start;
+      grid-auto-flow: column;
+      align-items: end;
+    }
+
+    .tmh__dial {
+      width: 5.5rem;
+    }
+  }
+</style>

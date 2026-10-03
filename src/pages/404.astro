@@ -1,0 +1,55 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DialGauge from '@/components/ui/DialGauge.astro';
+import ArrowLink from '@/components/ui/ArrowLink.astro';
+---
+
+<BaseLayout title="Seite nicht gefunden" description="Diese Seite liegt außerhalb der Toleranz." theme="graphite" noindex>
+  <section class="nf wrap" data-module="not-found" aria-labelledby="nf-title">
+    <div class="nf__dial" aria-hidden="true"><DialGauge /></div>
+    <div class="nf__copy">
+      <p class="nf__code t-num t-accent" data-reveal="scramble">404</p>
+      <h1 id="nf-title" class="t-display" data-reveal="lines">Außerhalb der Toleranz.</h1>
+      <p class="t-lead t-muted" data-reveal="lines" data-reveal-delay="0.1">
+        Diese Seite gibt es nicht (mehr). Vielleicht wurde sie verschoben, oder der Link stimmt nicht.
+      </p>
+      <ArrowLink href="/" label="Zur Startseite" size="lg" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    padding-block: calc(var(--header-h) + 3rem) 4rem;
+  }
+
+  .nf__dial {
+    width: min(100%, 34rem);
+  }
+
+  .nf__copy {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+
+  .nf__code {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1;
+  }
+
+  @media (max-width: 1023px) {
+    .nf {
+      grid-template-columns: 1fr;
+    }
+
+    .nf__dial {
+      width: 70%;
+    }
+  }
+</style>

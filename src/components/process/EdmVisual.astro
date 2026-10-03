@@ -1,0 +1,27 @@
+---
+/**
+ * Erodieren: Canvas mit Zahnradkontur. Der Funke folgt der Kontur, die geschnittene Bahn glüht nach.
+ * Die Partikel laufen nur, solange das Bild sichtbar ist (visuals/edm.ts).
+ */
+---
+
+<figure class="edm" data-visual="edm">
+  <canvas class="edm__canvas" aria-hidden="true"></canvas>
+  <figcaption class="visually-hidden">
+    Prinzipdarstellung: Funken tragen entlang einer programmierten Kontur Material ab.
+  </figcaption>
+</figure>
+
+<style>
+  .edm {
+    position: relative;
+    aspect-ratio: 1;
+  }
+
+  .edm__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

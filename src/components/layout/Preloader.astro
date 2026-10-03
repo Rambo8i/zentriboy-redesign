@@ -1,0 +1,107 @@
+---
+/**
+ * Preloader beim ersten Besuch: Die Messuhr zeichnet sich, die Nadel folgt dem Ladefortschritt,
+ * springt auf Null, dann öffnet sich das Bild entlang des Fadenkreuzes.
+ * Nur sichtbar mit `html.is-preloading` (gesetzt im Head-Skript, einmal pro Sitzung).
+ */
+import DialGauge from '../ui/DialGauge.astro';
+---
+
+<div class="preloader" aria-hidden="true" data-theme="graphite">
+  <div class="preloader__quad preloader__quad--tl"></div>
+  <div class="preloader__quad preloader__quad--tr"></div>
+  <div class="preloader__quad preloader__quad--bl"></div>
+  <div class="preloader__quad preloader__quad--br"></div>
+  <span class="preloader__line preloader__line--h"></span>
+  <span class="preloader__line preloader__line--v"></span>
+  <div class="preloader__dial">
+    <DialGauge unit="0,01 mm" />
+  </div>
+  <p class="preloader__count"><span class="preloader__num">000</span></p>
+</div>
+
+<style>
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-preloader);
+    display: none;
+    place-items: center;
+    background: transparent !important;
+    color: var(--c-light);
+    pointer-events: none;
+  }
+
+  :global(.is-preloading) .preloader {
+    display: grid;
+  }
+
+  .preloader__quad {
+    position: absolute;
+    width: 50.5%;
+    height: 50.5%;
+    background: var(--c-graphite);
+  }
+
+  .preloader__quad--tl {
+    top: 0;
+    left: 0;
+  }
+
+  .preloader__quad--tr {
+    top: 0;
+    right: 0;
+  }
+
+  .preloader__quad--bl {
+    bottom: 0;
+    left: 0;
+  }
+
+  .preloader__quad--br {
+    bottom: 0;
+    right: 0;
+  }
+
+  .preloader__line {
+    position: absolute;
+    background: var(--c-light);
+    opacity: 0.35;
+  }
+
+  .preloader__line--h {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    transform: scaleX(0);
+  }
+
+  .preloader__line--v {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: scaleY(0);
+  }
+
+  .preloader__dial {
+    position: relative;
+    width: min(42vmin, 340px);
+    --bg: var(--c-graphite);
+    --bg-2: var(--c-graphite-2);
+    --fg: var(--c-light);
+    --accent: var(--c-signal-bright);
+  }
+
+  .preloader__count {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + min(21vmin, 170px) + 1.75rem);
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

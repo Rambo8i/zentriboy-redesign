@@ -1,0 +1,42 @@
+---
+/** Zentrierkreuz: die Marke als geometrisches Zeichen (Kreis, Fadenkreuz, roter Mittelpunkt). */
+interface Props {
+  size?: string;
+  class?: string;
+}
+const { size = '1.5rem', class: cls = '' } = Astro.props;
+---
+
+<svg class={`mark ${cls}`} width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <circle class="mark__ring" cx="16" cy="16" r="10.5" />
+  <path class="mark__cross" d="M16 1.5v8M16 22.5v8M1.5 16h8M22.5 16h8" />
+  <circle class="mark__dot" cx="16" cy="16" r="2.6" />
+</svg>
+
+<style>
+  .mark {
+    flex: none;
+    overflow: visible;
+  }
+
+  .mark__ring,
+  .mark__cross {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+  }
+
+  .mark__cross {
+    transform-origin: 16px 16px;
+    transition: transform 0.9s var(--ease-out);
+  }
+
+  .mark__dot {
+    fill: var(--c-signal);
+  }
+
+  :global(a:hover) > .mark .mark__cross,
+  :global(a:focus-visible) > .mark .mark__cross {
+    transform: rotate(90deg);
+  }
+</style>

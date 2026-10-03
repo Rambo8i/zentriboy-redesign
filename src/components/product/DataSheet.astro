@@ -1,0 +1,132 @@
+---
+/**
+ * Datenblatt: Preis, Versand, Händler, Bestellung – vier Felder wie in einem Schriftfeld.
+ * Alle Werte kommen aus data/products.ts.
+ */
+import ArrowLink from '../ui/ArrowLink.astro';
+import { formatAmount, shipping, type Product } from '@/data/products';
+import { company } from '@/data/site';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+---
+
+<section class="sheet wrap" aria-labelledby={`sheet-${product.slug}`}>
+  <h2 id={`sheet-${product.slug}`} class="sheet__title t-title" data-reveal="lines">Datenblatt und Bestellung</h2>
+
+  <div class="sheet__grid">
+    <div class="sheet__cell sheet__cell--price">
+      <span class="sheet__label">Stückpreis</span>
+      <p class="sheet__price">
+        <span class="t-num" data-reveal="counter" data-value={formatAmount(product.price)}>{formatAmount(product.price)}</span>
+        <span class="sheet__cur">€</span>
+      </p>
+      <p class="t-mono t-muted">{product.priceNote} · Artikel {product.article}</p>
+    </div>
+
+    <div class="sheet__cell">
+      <span class="sheet__label">Versand</span>
+      <p class="sheet__big t-num">{formatAmount(shipping.domestic)} €</p>
+      <p class="t-small t-muted">{shipping.domesticNote}. {shipping.foreign}</p>
+    </div>
+
+    <div class="sheet__cell">
+      <span class="sheet__label">Händler</span>
+      <p class="sheet__text">{product.trade}</p>
+    </div>
+
+    <div class="sheet__cell sheet__cell--order">
+      <span class="sheet__label">Bestellen</span>
+      <ArrowLink href={product.orderMail} label="Per E-Mail bestellen" size="lg" cursor="order" />
+      <p class="t-small t-muted">oder per Fax an {company.fax.display}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sheet {
+    position: relative;
+    z-index: var(--z-above-stage);
+    padding-block: clamp(5rem, 10vw, 9rem);
+    display: grid;
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .sheet__grid {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    border: 1px solid var(--line-strong);
+  }
+
+  .sheet__cell {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    padding: clamp(1.25rem, 2vw, 2rem);
+    border-right: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong);
+    min-height: 12rem;
+  }
+
+  .sheet__cell:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .sheet__cell:nth-child(n + 3) {
+    border-bottom: 0;
+  }
+
+  .sheet__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .sheet__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: clamp(3.5rem, 8vw, 8rem);
+    line-height: 0.9;
+  }
+
+  .sheet__cur {
+    font-size: 0.45em;
+    font-weight: 500;
+  }
+
+  .sheet__big {
+    font-size: clamp(2rem, 3.2vw, 3.25rem);
+    line-height: 1;
+  }
+
+  .sheet__text {
+    font-size: var(--fs-lead);
+    letter-spacing: -0.01em;
+  }
+
+  .sheet__cell--order {
+    align-content: space-between;
+  }
+
+  @media (max-width: 767px) {
+    .sheet__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sheet__cell {
+      border-right: 0 !important;
+      border-bottom: 1px solid var(--line-strong) !important;
+      min-height: 0;
+    }
+
+    .sheet__cell:last-child {
+      border-bottom: 0 !important;
+    }
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+/** Kontakt (Startseite): die E-Mail-Adresse ist die Handlungsaufforderung, übergroß gesetzt. */
+import Icon from '../ui/Icon.astro';
+import { company, inquiryMail } from '@/data/site';
+---
+
+<section class="contact" data-theme="graphite" aria-labelledby="contact-title">
+  <div class="contact__inner wrap">
+    <div class="contact__head">
+      <h2 id="contact-title" class="contact__title t-display" data-reveal="lines">Haben Sie<br />eine Zeichnung?</h2>
+      <p class="contact__lead t-lead t-muted" data-reveal="lines" data-reveal-delay="0.1">
+        Schicken Sie sie uns per E-Mail oder Fax. Wir melden uns bei Ihnen.
+      </p>
+    </div>
+
+    <a class="contact__mail" href={inquiryMail} data-cursor="mail" data-hover-scramble data-reveal="rise">
+      <span class="contact__mail-text" data-hover-scramble-text>{company.email}</span>
+      <span class="visually-hidden">(E-Mail-Anfrage schreiben)</span>
+    </a>
+
+    <dl class="contact__facts">
+      <div>
+        <dt class="t-mono t-muted"><Icon name="phone" /> Telefon</dt>
+        <dd><a href={company.phone.href}>{company.phone.display}</a></dd>
+      </div>
+      <div>
+        <dt class="t-mono t-muted"><Icon name="printer" /> Fax</dt>
+        <dd>{company.fax.display}</dd>
+      </div>
+      <div>
+        <dt class="t-mono t-muted"><Icon name="map-pin" /> Anschrift</dt>
+        <dd>{company.street}, {company.postalCode} {company.city}</dd>
+      </div>
+    </dl>
+    <p class="contact__order t-small t-muted">Bestellungen für ZentriBoy und Tensiometer bitte per Fax oder E-Mail.</p>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    padding-block: clamp(7rem, 14vw, 13rem) clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .contact__inner {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .contact__head {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .contact__lead {
+    max-width: 30ch;
+  }
+
+  .contact__mail {
+    position: relative;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    font-size: calc((100vw - 2 * var(--margin)) / 8.9);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    padding-bottom: 0.08em;
+  }
+
+  .contact__mail::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: max(2px, 0.03em);
+    background: var(--accent);
+    transform: scaleX(0.12);
+    transform-origin: left;
+    transition: transform 0.9s var(--ease-out);
+  }
+
+  .contact__mail:hover::after,
+  .contact__mail:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .contact__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem var(--gutter);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .contact__facts dt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact__facts dd {
+    font-size: var(--fs-lead);
+    letter-spacing: -0.01em;
+  }
+
+  .contact__facts a {
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.18em;
+  }
+
+  .contact__order {
+    max-width: 50ch;
+  }
+
+  @media (max-width: 767px) {
+    .contact__facts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

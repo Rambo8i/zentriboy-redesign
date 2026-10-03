@@ -1,0 +1,122 @@
+---
+import { company, nav } from '@/data/site';
+
+interface Props {
+  current: string;
+}
+
+const { current } = Astro.props;
+const items = [{ href: '/', label: 'Start' }, ...nav];
+---
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menü" hidden data-theme="graphite" data-module="menu">
+  <div class="menu__bar">
+    <span class="menu__title t-mono">Menü</span>
+    <button class="menu__close" type="button" data-menu-close>Schließen</button>
+  </div>
+
+  <nav class="menu__nav" aria-label="Hauptnavigation">
+    <ul role="list">
+      {
+        items.map((item) => (
+          <li class="menu__item">
+            <a class="menu__link" href={item.href} aria-current={current === item.href ? 'page' : undefined}>
+              <span class="menu__label">{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <address class="menu__meta">
+    <a href={`mailto:${company.email}`}>{company.email}</a>
+    <a href={company.phone.href}>Telefon {company.phone.display}</a>
+    <span>{company.street}, {company.postalCode} {company.city}</span>
+  </address>
+</div>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0 var(--margin) calc(var(--margin) + env(safe-area-inset-bottom));
+    background: var(--bg);
+    color: var(--fg);
+    overflow-y: auto;
+  }
+
+  .menu[hidden] {
+    display: none;
+  }
+
+  .menu__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-h);
+  }
+
+  .menu__title {
+    color: var(--fg-muted);
+  }
+
+  .menu__close {
+    height: 2.75rem;
+    padding-inline: 1.1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .menu__nav {
+    align-self: center;
+  }
+
+  .menu__nav ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu__item {
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .menu__link {
+    display: block;
+    padding-block: 0.35rem 0.2rem;
+    font-stretch: 125%;
+    font-weight: 780;
+    font-size: clamp(2.25rem, 10.5vw, 4.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .menu__label {
+    display: inline-block;
+  }
+
+  .menu__link[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  .menu__meta {
+    display: grid;
+    gap: 0.35rem;
+    padding-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--fg-muted);
+  }
+
+  .menu__meta a {
+    color: var(--fg);
+  }
+</style>

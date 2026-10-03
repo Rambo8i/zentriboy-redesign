@@ -1,0 +1,143 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { company, inquiryMail } from '@/data/site';
+
+const route = `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${company.street}, ${company.postalCode} ${company.city}`)}`;
+---
+
+<BaseLayout
+  title="Kontakt"
+  description="Kontakt zur Braun GmbH in Fridingen an der Donau: Telefon 07463 8088, Fax 07463 5007, info@zentriboy.de. Anfragen und Bestellungen per E-Mail oder Fax."
+  theme="paper"
+>
+  <section class="kh wrap" aria-labelledby="kh-title">
+    <h1 id="kh-title" class="kh__title t-mega" data-reveal="chars">Kontakt</h1>
+
+    <a class="kh__mail" href={inquiryMail} data-cursor="mail" data-hover-scramble data-reveal="rise">
+      <span data-hover-scramble-text>{company.email}</span>
+      <span class="visually-hidden">(E-Mail-Anfrage schreiben)</span>
+    </a>
+
+    <dl class="kh__grid">
+      <div class="kh__cell kh__cell--addr">
+        <dt class="t-mono t-muted">Anschrift</dt>
+        <dd>
+          <address class="t-lead">
+            {company.name}<br />
+            {company.street}<br />
+            {company.postalCode} {company.city} {company.region}<br />
+            {company.country}
+          </address>
+          <a class="kh__route text-link" href={route} target="_blank" rel="noopener">
+            Route planen <Icon name="arrow-up-right" size="0.9em" />
+            <span class="visually-hidden">(OpenStreetMap, öffnet in neuem Fenster)</span>
+          </a>
+        </dd>
+      </div>
+      <div class="kh__cell">
+        <dt class="t-mono t-muted">Telefon</dt>
+        <dd class="t-lead"><a href={company.phone.href}>{company.phone.display}</a></dd>
+      </div>
+      <div class="kh__cell">
+        <dt class="t-mono t-muted">Fax</dt>
+        <dd class="t-lead">{company.fax.display}</dd>
+      </div>
+      <div class="kh__cell">
+        <dt class="t-mono t-muted">Bestellungen</dt>
+        <dd>ZentriBoy und Tensiometer bitte per Fax oder E-Mail bestellen. Versand pauschal 7,90 € pro Sendung im Inland.</dd>
+      </div>
+      <div class="kh__cell">
+        <dt class="t-mono t-muted">Geschäftsführer</dt>
+        <dd>{company.managingDirector}</dd>
+      </div>
+    </dl>
+  </section>
+</BaseLayout>
+
+<style>
+  .kh {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    padding-block: calc(var(--header-h) + clamp(3rem, 8vw, 7rem)) clamp(5rem, 10vw, 9rem);
+  }
+
+  .kh__title {
+    font-size: calc((100vw - 2 * var(--margin)) / 6.4);
+  }
+
+  .kh__mail {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    font-size: calc((100vw - 2 * var(--margin)) / 8.9);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    padding-bottom: 0.08em;
+  }
+
+  .kh__mail::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: max(2px, 0.03em);
+    background: var(--accent);
+    transform: scaleX(0.12);
+    transform-origin: left;
+    transition: transform 0.9s var(--ease-out);
+  }
+
+  .kh__mail:hover::after,
+  .kh__mail:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .kh__grid {
+    display: grid;
+    grid-template-columns: 5fr 2fr 2fr 3fr;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .kh__cell {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding: 1.25rem 1.25rem 1.5rem 0;
+  }
+
+  .kh__cell--addr {
+    grid-row: span 2;
+  }
+
+  .kh__cell dd {
+    max-width: 34ch;
+  }
+
+  .kh__route {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1rem;
+  }
+
+  .kh__cell a:not(.kh__route) {
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.18em;
+  }
+
+  @media (max-width: 1023px) {
+    .kh__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .kh__cell--addr {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+</style>

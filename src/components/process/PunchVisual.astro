@@ -1,0 +1,76 @@
+---
+/**
+ * Werkzeugbau: Schnittdarstellung eines Schneidwerkzeugs (Prinzip).
+ * Stempel fährt durch den Blechstreifen, der Butzen fällt durch die Matrize, der Streifen rückt vor.
+ * Animation in visuals/punch.ts (per Scroll gesteuert).
+ */
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const hatchA = `${id}-ha`;
+const hatchB = `${id}-hb`;
+---
+
+<svg class="drawing drawing--punch" viewBox="0 0 600 520" data-visual="punch" role="img" aria-label="Prinzipzeichnung eines Schneidwerkzeugs: Stempel, Blechstreifen und Matrize im Schnitt">
+  <defs>
+    <pattern id={hatchA} width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)" class="d-hatch">
+      <line x1="0" y1="0" x2="0" y2="9"></line>
+    </pattern>
+    <pattern id={hatchB} width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)" class="d-hatch">
+      <line x1="0" y1="0" x2="0" y2="9"></line>
+    </pattern>
+  </defs>
+
+  <line class="d-axis" x1="300" y1="14" x2="300" y2="500"></line>
+
+  <!-- Oberteil: Kopfplatte + Stempel (fährt) -->
+  <g class="p-upper">
+    <rect x="130" y="34" width="340" height="58" fill={`url(#${hatchA})`}></rect>
+    <rect class="d-body" x="130" y="34" width="340" height="58"></rect>
+    <rect x="263" y="92" width="74" height="152" fill={`url(#${hatchB})`}></rect>
+    <rect class="d-body" x="263" y="92" width="74" height="152"></rect>
+  </g>
+
+  <!-- Führungsplatte (Abstreifer) -->
+  <g class="p-stripper">
+    <rect x="150" y="224" width="108" height="34" fill={`url(#${hatchA})`}></rect>
+    <rect class="d-body" x="150" y="224" width="108" height="34"></rect>
+    <rect x="342" y="224" width="108" height="34" fill={`url(#${hatchA})`}></rect>
+    <rect class="d-body" x="342" y="224" width="108" height="34"></rect>
+  </g>
+
+  <!-- Blechstreifen mit Butzen -->
+  <g class="p-strip">
+    <rect class="d-solid" x="-40" y="262" width="301" height="11"></rect>
+    <rect class="d-solid" x="339" y="262" width="340" height="11"></rect>
+    <rect class="d-hidden" x="118" y="262" width="76" height="11"></rect>
+  </g>
+  <rect class="d-solid p-slug" x="261" y="262" width="78" height="11"></rect>
+
+  <!-- Unterteil: Matrize mit Freiwinkel + Grundplatte -->
+  <g class="p-lower">
+    <path d="M150 273H260V300L254 368H150Z" fill={`url(#${hatchB})`}></path>
+    <path class="d-body" d="M150 273H260V300L254 368H150Z"></path>
+    <path d="M340 273H450V368H346L340 300Z" fill={`url(#${hatchB})`}></path>
+    <path class="d-body" d="M340 273H450V368H346L340 300Z"></path>
+    <rect x="110" y="368" width="140" height="54" fill={`url(#${hatchA})`}></rect>
+    <rect class="d-body" x="110" y="368" width="140" height="54"></rect>
+    <rect x="350" y="368" width="140" height="54" fill={`url(#${hatchA})`}></rect>
+    <rect class="d-body" x="350" y="368" width="140" height="54"></rect>
+  </g>
+
+  <!-- Beschriftung -->
+  <g class="p-labels">
+    <path class="d-leader" d="M337 150L470 118H520"></path>
+    <text class="d-label" x="476" y="110">Stempel</text>
+    <path class="d-leader" d="M470 267L512 300H560"></path>
+    <text class="d-label" x="470" y="322">Blechstreifen</text>
+    <path class="d-leader" d="M430 330L500 352H560"></path>
+    <text class="d-label" x="500" y="374">Matrize</text>
+  </g>
+  <g class="p-slug-label">
+    <path class="d-leader" d="M318 470L372 490H420"></path>
+    <text class="d-label d-label--muted" x="376" y="512">Butzen</text>
+  </g>
+</svg>
