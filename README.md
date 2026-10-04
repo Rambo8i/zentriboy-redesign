@@ -15,7 +15,7 @@ npm run preview    # Build lokal ansehen
 npm run check      # Typprüfung (astro check)
 ```
 
-Node 22.12 oder neuer (Astro 7), empfohlen ist Node 24 laut `.nvmrc` (`nvm use`). Der Build ist vollständig
+Node 22.12+ oder 24 (Astro 7; `engines` in `package.json`), empfohlen ist Node 24 laut `.nvmrc` (`nvm use`). Der Build ist vollständig
 statisch (HTML, CSS, JS, Bilder) und läuft auf jedem Webspace.
 
 ## Mitarbeit (GitHub)
@@ -32,6 +32,26 @@ statisch (HTML, CSS, JS, Bilder) und läuft auf jedem Webspace.
   (siehe [SECURITY.md](SECURITY.md)).
 
 ## Deployment
+
+### Live-Vorschau auf Vercel
+
+Das Vercel-Projekt ist mit diesem Repository verbunden (Git-Integration):
+
+- **Jeder Pull Request** bekommt automatisch eine eigene Vorschau-URL (Kommentar des Vercel-Bots im PR). Diese
+  Vorschauen sind durch Vercel Authentication geschützt.
+- **Jeder Merge auf `main`** aktualisiert die öffentliche Produktions-URL des Projekts (`*.vercel.app`).
+- Konfiguration als Code in [`vercel.json`](vercel.json): Build (`npm ci`, `npm run build`, Ausgabe `dist`),
+  Weiterleitungen der alten Adressen wie in `.htaccess`, Sicherheits-Header, Langzeit-Cache für `/_astro/`,
+  einheitliche URLs mit Schrägstrich am Ende. Node-Version kommt aus `engines` in `package.json` (24.x).
+- **Nicht indexieren:** Auf allen `*.vercel.app`-Adressen sendet die Seite `X-Robots-Tag: noindex, nofollow`.
+  Die Vorschau taucht so nicht in Suchmaschinen auf; Canonical und Sitemap zeigen auf `www.zentriboy.de`.
+  Hängt später die echte Domain am Projekt, greift die Regel dort nicht.
+- Kein Vercel-Adapter, keine Analytics: Der Build bleibt reines statisches HTML und läuft unverändert auch auf dem
+  Webspace. Vercel Analytics würde die Datenschutzerklärung („kein Tracking“) ändern.
+- **Hinweis:** Der Vercel-Hobby-Plan ist laut Vercel nur für nicht-kommerzielle, private Nutzung gedacht. Für den
+  echten Betrieb der Firmenwebsite auf Vercel braucht es den Pro-Plan, oder die Seite geht wie geplant auf den Webspace.
+
+### Webspace (Apache)
 
 - Inhalt von `dist/` hochladen. Jeder CI-Lauf legt den fertigen Build als Artefakt `dist` ab (7 Tage, im Reiter
   **Actions** beim jeweiligen Lauf), das lässt sich direkt hochladen.
@@ -135,6 +155,7 @@ src/
 public/         Dateien ohne Verarbeitung (.htaccess, favicon, robots.txt)
 docs/quelle/    Export der alten Website (Inhaltsquelle)
 .github/        CI-Workflow, Dependabot, Pull-Request-Vorlage
+vercel.json     Vercel: Build, Weiterleitungen, Header (Live-Vorschau)
 ```
 
 ## Lizenz

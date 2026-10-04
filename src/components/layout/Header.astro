@@ -1,15 +1,18 @@
 ---
 import Mark from '../ui/Mark.astro';
 import Menu from './Menu.astro';
-import { nav } from '@/data/site';
+import { nav, normalizePath } from '@/data/site';
 
 interface Props {
   theme: 'paper' | 'graphite';
 }
 
 const { theme } = Astro.props;
-const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
-const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+const path = normalizePath(Astro.url.pathname);
+const isCurrent = (href: string) => {
+  const target = normalizePath(href);
+  return path === target || path.startsWith(`${target}/`);
+};
 ---
 
 <header class="header" data-module="header" data-on={theme}>

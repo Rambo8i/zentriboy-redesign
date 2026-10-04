@@ -1,0 +1,43 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "astro",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/company.html", "destination": "/kontakt/", "permanent": true },
+    { "source": "/product1.html", "destination": "/werkstatt/", "permanent": true },
+    { "source": "/tensiometer.html", "destination": "/tensiometer/", "permanent": true },
+    { "source": "/zentriboy.html", "destination": "/zentriboy/", "permanent": true },
+    { "source": "/impressum.htm", "destination": "/impressum/", "permanent": true },
+    { "source": "/impressum.html", "destination": "/impressum/", "permanent": true },
+    { "source": "/related.html", "destination": "/", "permanent": true },
+    { "source": "/:page(Imgp\\d+_jpg_view\\.htm)", "destination": "/werkstatt/", "permanent": true },
+    { "source": "/:page(imgp\\d+_jpg_view\\.htm)", "destination": "/werkstatt/", "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+        }
+      ]
+    },
+    {
+      "source": "/_astro/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "suf": ".vercel.app" } }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ]
+}
