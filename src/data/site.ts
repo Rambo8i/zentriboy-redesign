@@ -34,13 +34,20 @@ export const site = {
 
 export type NavItem = { href: string; label: string };
 
+/*
+ * Links mit abschließendem Schrägstrich: So liegen die Seiten im Build (/zentriboy/index.html),
+ * so lauten Canonical und Sitemap, und so leiten weder Apache noch Vercel um.
+ */
 export const nav: NavItem[] = [
-  { href: '/fertigung', label: 'Fertigung' },
-  { href: '/werkstatt', label: 'Werkstatt' },
-  { href: '/zentriboy', label: 'ZentriBoy' },
-  { href: '/tensiometer', label: 'Tensiometer' },
-  { href: '/kontakt', label: 'Kontakt' },
+  { href: '/fertigung/', label: 'Fertigung' },
+  { href: '/werkstatt/', label: 'Werkstatt' },
+  { href: '/zentriboy/', label: 'ZentriBoy' },
+  { href: '/tensiometer/', label: 'Tensiometer' },
+  { href: '/kontakt/', label: 'Kontakt' },
 ];
+
+/** Pfad ohne abschließende Schrägstriche, für Vergleiche ("/zentriboy/" → "/zentriboy") */
+export const normalizePath = (pathname: string): string => pathname.replace(/\/+$/, '') || '/';
 
 /** Seitennamen für die Seitenblende und das Schriftfeld. */
 export const routeLabels: Record<string, string> = {
@@ -55,8 +62,7 @@ export const routeLabels: Record<string, string> = {
 };
 
 export function labelForPath(pathname: string): string {
-  const clean = pathname.replace(/\/+$/, '') || '/';
-  return routeLabels[clean] ?? 'Braun GmbH';
+  return routeLabels[normalizePath(pathname)] ?? 'Braun GmbH';
 }
 
 /**

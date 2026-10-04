@@ -1,5 +1,5 @@
 ---
-import { company, nav } from '@/data/site';
+import { company, nav, normalizePath } from '@/data/site';
 
 interface Props {
   current: string;
@@ -20,7 +20,7 @@ const items = [{ href: '/', label: 'Start' }, ...nav];
       {
         items.map((item) => (
           <li class="menu__item">
-            <a class="menu__link" href={item.href} aria-current={current === item.href ? 'page' : undefined}>
+            <a class="menu__link" href={item.href} aria-current={current === normalizePath(item.href) ? 'page' : undefined}>
               <span class="menu__label">{item.label}</span>
             </a>
           </li>
