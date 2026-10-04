@@ -35,6 +35,8 @@ statisch (HTML, CSS, JS, Bilder) und läuft auf jedem Webspace.
 
 ### Live-Vorschau auf Vercel
 
+**Live:** <https://zentriboy-redesign.vercel.app> (Vercel-Projekt `zentriboy-redesign`, Team „rambo8i's projects“)
+
 Das Vercel-Projekt ist mit diesem Repository verbunden (Git-Integration):
 
 - **Jeder Pull Request** bekommt automatisch eine eigene Vorschau-URL (Kommentar des Vercel-Bots im PR). Diese
