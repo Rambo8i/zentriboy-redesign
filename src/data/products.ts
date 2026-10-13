@@ -72,6 +72,30 @@ export const products: Record<Product['slug'], Product> = {
   },
 };
 
+/**
+ * Strukturierte Produktdaten (schema.org/Product) – nur Angaben, die auch auf der Seite stehen.
+ * Bewusst ohne Verfügbarkeit, Lieferzeit, Rückgabe oder Bewertungen: Diese Angaben liegen nicht vor.
+ */
+export function productJsonLd(product: Product, opts: { image: URL; url: URL; site: URL }) {
+  const org = new URL('/#organisation', opts.site).toString();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.article,
+    description: product.summary,
+    image: [opts.image.toString()],
+    brand: { '@type': 'Brand', name: 'Braun' },
+    manufacturer: { '@id': org },
+    offers: {
+      '@type': 'Offer',
+      price: product.price.toFixed(2),
+      priceCurrency: 'EUR',
+      url: opts.url.toString(),
+      seller: { '@id': org },
+    },
+  };
+}
+
 const euro = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /** „166,00“ – der Betrag ohne Währungszeichen, für getrennte Typografie. */

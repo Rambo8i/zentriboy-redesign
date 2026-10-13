@@ -9,18 +9,21 @@ import ZentriBoySchematic from '@/components/product/ZentriBoySchematic.astro';
 import DataSheet from '@/components/product/DataSheet.astro';
 import NextSheet from '@/components/product/NextSheet.astro';
 import UsePlate from '@/components/product/UsePlate.astro';
-import { products, formatPrice } from '@/data/products';
+import { products, formatPrice, productJsonLd } from '@/data/products';
 import { aiVisuals, visuals } from '@/data/visuals';
 import teile from '@/assets/products/zentriboy-teile.jpg';
 import montiert from '@/assets/products/zentriboy-rad-2.jpg';
 
 const zb = products.zentriboy;
+const site = Astro.site!;
+const productData = productJsonLd(zb, { image: new URL(montiert.src, site), url: new URL(Astro.url.pathname, site), site });
 ---
 
 <BaseLayout
   title="ZentriBoy"
   description="Der Braun ZentriBoy ersetzt den Zentrierständer vollkommen: direkt am Fahrrad festklemmen und sofort zentrieren. Mit Messuhr, 166,00 € inkl. MwSt."
   theme="graphite"
+  structuredData={[productData]}
 >
   <Hero word="ZENTRIBOY" title="ZentriBoy: Laufrad zentrieren, ohne es auszubauen" theme="graphite" view="product" variant="product">
     <p class="hero__sub t-lead" data-reveal="lines" data-reveal-delay="0.35">

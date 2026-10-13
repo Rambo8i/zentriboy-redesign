@@ -84,11 +84,11 @@ export function createEdm(fig: HTMLElement): Visual {
       ctx.stroke();
     }
 
-    // Funken
+    // Funken – nur solange der Schnitt fortschreitet (Scrollen). Kein Dauerfeuer im Stand: WCAG 2.2.2
     const moving = Math.abs(state.p - lastP) > 1e-5;
     lastP = state.p;
     if (active && !reduce && state.p < 0.999) {
-      emitCarry += dt * (moving ? 520 : 220);
+      emitCarry += moving ? dt * 520 : 0;
       while (emitCarry > 1 && sparks.length < maxSparks) {
         emitCarry -= 1;
         const a = Math.random() * Math.PI * 2;

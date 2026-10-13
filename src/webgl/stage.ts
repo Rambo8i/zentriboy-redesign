@@ -9,11 +9,17 @@
 import * as THREE from 'three';
 import { WorkshopEnvironment } from './workshop-env';
 import { buildWheel, TIRE_R, type WheelBuild } from './wheel';
-import { wheelState, PROBE_ANGLE, effectiveRunout, ensureWheelClock } from './wheel-state';
+import { wheelState, PROBE_ANGLE, effectiveRunout, ensureWheelClock, wakeWheel } from './wheel-state';
 import { damp } from '@/lib/math';
 import { runoutProfile } from '@/lib/math';
 import { onTick } from '@/lib/ticker';
 import { isFinePointer, prefersReducedMotion, qualityTier } from '@/lib/motion';
+
+/** Hauptthread kurz freigeben – auch im Hintergrund-Tab (kein requestAnimationFrame). */
+const yieldToMain = (): Promise<void> => {
+  const scheduler = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+  return scheduler?.yield ? scheduler.yield() : new Promise((resolve) => setTimeout(resolve, 0));
+};
 
 /** maximaler Seitenschlag in Radeinheiten (Radius = 1) – bewusst überzeichnet, damit man ihn sieht */
 const AMP = 0.07;
@@ -39,9 +45,9 @@ export class Stage {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 60);
   private outer = new THREE.Group();
-  private wheel: WheelBuild;
+  private wheel!: WheelBuild;
   private uniforms = { uRunout: { value: 0 } };
-  private lvhProbe: HTMLElement;
+  private lvhProbe!: HTMLElement;
 
   private anchor: HTMLElement | null = null;
   private anchorVisible = false;
@@ -56,12 +62,14 @@ export class Stage {
   private ppu = 1;
   private lastKey = '';
   private reduced = prefersReducedMotion();
-  private stopTick: () => void;
+  private stopTick: () => void = () => {};
+  private tier = qualityTier();
   private probe = new THREE.Vector3();
 
+  /** Schneller Teil: Renderer und Kamera. Der aufwendige Aufbau folgt in init(). */
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    const tier = qualityTier();
+    const tier = this.tier;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -75,6 +83,19 @@ export class Stage {
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, tier === 'high' ? 1.75 : tier === 'medium' ? 1.35 : 1));
 
+    this.camera.position.set(0, 0, CAM_Z);
+  }
+
+  /**
+   * Aufbau in Etappen: Zwischen Umgebung, Geometrie und Shadern gibt der Hauptthread ab, und die
+   * Shader kompilieren asynchron (KHR_parallel_shader_compile). So entsteht beim Start keine lange
+   * Blockade mehr (vorher eine Aufgabe von rund 850 ms bei mobiler CPU-Drosselung).
+   */
+  async init(): Promise<void> {
+    const tier = this.tier;
+    const canvas = this.canvas;
+    await yieldToMain();
+
     // Spiegelungen aus einer nachgebauten Werkstatt (Fenster links wie in der Produktvisualisierung)
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     const workshop = new WorkshopEnvironment();
@@ -82,6 +103,7 @@ export class Stage {
     this.scene.environmentIntensity = 1;
     workshop.dispose();
     pmrem.dispose();
+    await yieldToMain();
 
     // Führungslicht aus Richtung des Fensters, leicht kühl
     const key = new THREE.DirectionalLight(0xf2f6ff, 1.1);
@@ -92,7 +114,8 @@ export class Stage {
     this.outer.rotation.order = 'YXZ';
     this.outer.add(this.wheel.spin);
     this.scene.add(this.outer);
-    this.camera.position.set(0, 0, CAM_Z);
+    await yieldToMain();
+    await this.renderer.compileAsync(this.scene, this.camera);
 
     this.lvhProbe = document.createElement('div');
     this.lvhProbe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100lvh;pointer-events:none;visibility:hidden';
@@ -113,6 +136,7 @@ export class Stage {
 
   /** Neuen Anker der aktuellen Seite übernehmen (oder keinen). */
   setAnchor(el: HTMLElement | null): void {
+    wakeWheel();
     this.anchor = el;
     this.keepTarget = false;
     this.anchorVisible = false;
@@ -261,9 +285,9 @@ export class Stage {
     document.removeEventListener('zb:transition-start', this.onTransitionStart);
     document.removeEventListener('zb:transition-end', this.onTransitionEnd);
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
-    this.wheel.dispose();
+    this.wheel?.dispose();
     this.scene.environment?.dispose();
     this.renderer.dispose();
-    this.lvhProbe.remove();
+    this.lvhProbe?.remove();
   }
 }

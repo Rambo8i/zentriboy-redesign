@@ -1,9 +1,29 @@
 ---
 import LegalPage from '@/components/layout/LegalPage.astro';
-import { company } from '@/data/site';
+import { company, legal } from '@/data/site';
+
+// Fehlende Angaben nicht still weglassen, sondern bis zur Ergänzung sichtbar als Entwurf kennzeichnen.
+const missing = [
+  !company.register && 'Registergericht und Registernummer (Pflichtangabe für eine GmbH, § 5 Abs. 1 Nr. 4 DDG)',
+  !company.vatId && 'Umsatzsteuer-Identifikationsnummer, falls vorhanden (§ 5 Abs. 1 Nr. 6 DDG)',
+  !legal.consumerDispute && 'Hinweis zur Verbraucherstreitbeilegung, falls erforderlich (§ 36 VSBG)',
+].filter(Boolean);
 ---
 
 <LegalPage title="Impressum" description="Impressum der Braun GmbH, Württembergerstr. 14, 78567 Fridingen.">
+  {
+    missing.length > 0 && (
+      <div class="note">
+        <p>Entwurf: Folgende Angaben fehlen noch und werden von der Braun GmbH ergänzt:</p>
+        <ul>
+          {missing.map((m) => (
+            <li>{m}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
   <h2>Angaben gemäß § 5 DDG</h2>
   <p>
     {company.name}<br />
@@ -41,6 +61,15 @@ import { company } from '@/data/site';
       <Fragment>
         <h2>Umsatzsteuer-Identifikationsnummer</h2>
         <p>{company.vatId}</p>
+      </Fragment>
+    )
+  }
+
+  {
+    legal.consumerDispute && (
+      <Fragment>
+        <h2>Verbraucherstreitbeilegung</h2>
+        <p>{legal.consumerDispute}</p>
       </Fragment>
     )
   }

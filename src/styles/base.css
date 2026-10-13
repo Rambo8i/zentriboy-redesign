@@ -137,7 +137,8 @@ address {
   transform: none;
 }
 
-.visually-hidden {
+.visually-hidden,
+.focus-pill:not(:focus-visible) {
   position: absolute !important;
   width: 1px;
   height: 1px;
@@ -148,6 +149,26 @@ address {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+/*
+ * Tastatur-Alternative zu einer Zeiger-Geste (z. B. Speiche zupfen): unsichtbar, bis sie den
+ * Tastaturfokus bekommt, dann als gut sichtbarer Knopf unten links in ihrer Sektion (WCAG 2.4.7).
+ */
+.focus-pill:focus-visible {
+  position: absolute;
+  left: var(--margin);
+  bottom: clamp(1rem, 3svh, 2rem);
+  z-index: calc(var(--z-above-stage) + 1);
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--fg);
+  border-radius: 999px;
 }
 
 /* Fließtext-Links sind unterstrichen: Links dürfen nie nur über Farbe erkennbar sein */
@@ -191,7 +212,7 @@ html.has-cursor * {
   }
 }
 
-/* Filmkorn: fest, ohne Zeiger, nur Transform wird animiert */
+/* Filmkorn: fest, ohne Zeiger. Bewusst unbewegt: Dauerbewegung ohne Pause-Möglichkeit verstößt gegen WCAG 2.2.2 */
 .grain {
   position: fixed;
   inset: 0;
@@ -211,27 +232,12 @@ html.has-cursor * {
 .grain::before {
   content: '';
   position: absolute;
-  inset: -50%;
+  inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
-  animation: grain 1.2s steps(6) infinite;
-}
-
-@keyframes grain {
-  0% { transform: translate3d(0, 0, 0); }
-  17% { transform: translate3d(-4%, 3%, 0); }
-  33% { transform: translate3d(3%, -5%, 0); }
-  50% { transform: translate3d(-6%, -2%, 0); }
-  67% { transform: translate3d(5%, 4%, 0); }
-  83% { transform: translate3d(-2%, 6%, 0); }
-  100% { transform: translate3d(0, 0, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grain::before {
-    animation: none;
-  }
-
   *,
   *::before,
   *::after {
