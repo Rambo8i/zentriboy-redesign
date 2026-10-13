@@ -86,20 +86,33 @@ die Werkstatt-Sektion und den Leuchttisch deutlich auf.
 1. **Preise** in `products.ts` stammen vom alten Stand der Website (ZentriBoy 166,00 €, Tensiometer 145,67 €,
    Versand 7,90 €).
 2. **Impressum:** Registergericht, Registernummer und ggf. USt-IdNr. fehlen im alten Impressum. In `site.ts` bei
-   `register` und `vatId` eintragen, dann erscheinen sie automatisch.
+   `register` und `vatId` eintragen, dann erscheinen sie automatisch. Ab mehr als 10 Beschäftigten ist ein Hinweis
+   zur Verbraucherstreitbeilegung Pflicht (§ 36 VSBG): Formulierung in `legal.consumerDispute`. Bis dahin zeigt das
+   Impressum einen sichtbaren Entwurfshinweis mit den fehlenden Punkten.
 3. **Datenschutz:** Die Erklärung ist ein Entwurf auf Basis dessen, was die Seite technisch tut (keine Cookies,
-   kein Tracking, Schriften lokal, sessionStorage nur für die Startanimation). Rechtlich prüfen, Hosting-Anbieter
-   ergänzen, dann `legal.privacyReviewed` in `site.ts` auf `true` setzen (der Entwurfshinweis verschwindet).
-4. **Verfahrenstexte** in `processes.ts` sind neu formuliert und beschreiben die Verfahren allgemein. Bitte fachlich
+   kein Tracking, keine externen Dienste, sessionStorage nur für die Startanimation). Hosting-Anbieter mit
+   Anschrift, Speicherdauer der Server-Protokolle und ggf. Drittland in `legal.hosting` eintragen, rechtlich prüfen,
+   dann `legal.privacyReviewed` auf `true` setzen (der Entwurfshinweis verschwindet).
+4. **Bestellung per E-Mail an Verbraucher (Fernabsatz):** Es fehlen Widerrufsbelehrung mit Muster-Widerrufsformular
+   sowie Angaben zu Zahlungsarten, Lieferzeit und Versand ins Ausland (§ 312d BGB, Art. 246a EGBGB). Dafür braucht es
+   Entscheidungen der Braun GmbH (z. B. wer die Rücksendekosten trägt) und eine rechtliche Prüfung. Details im
+   [Audit-Bericht](docs/audit/2026-10-website-audit.md).
+5. **Barrierefreiheitsstärkungsgesetz:** Prüfen, ob die Braun GmbH als Kleinstunternehmen ausgenommen ist. Falls
+   nicht, braucht die Website eine Erklärung zur Barrierefreiheit. Technisch ist sie auf WCAG 2.2 AA geprüft.
+6. **Verfahrenstexte** in `processes.ts` sind neu formuliert und beschreiben die Verfahren allgemein. Bitte fachlich
    gegenlesen.
-5. **Prinzipzeichnungen** von ZentriBoy und Tensiometer sind nach den Originalfotos gezeichnet und als
+7. **Prinzipzeichnungen** von ZentriBoy und Tensiometer sind nach den Originalfotos gezeichnet und als
    „Prinzipdarstellung“ gekennzeichnet. Kurz auf Plausibilität prüfen.
-6. **KI-Visualisierung ZentriBoy freigeben** (Bild und Video, siehe unten). Abweichungen vom echten Gerät: Die Klemme
+8. **KI-Visualisierung ZentriBoy freigeben** (Bild und Video, siehe unten). Abweichungen vom echten Gerät: Die Klemme
    ist eckiger als das Original, der Messtaster zeigt nach unten statt auf die Felgenflanke. Passt das, in
    `visuals.ts` `approved: true` setzen; sonst `aiVisuals.enabled = false`, dann stehen wieder die Originalfotos.
-7. **Video verkleinern (empfohlen):** Die Schleife kommt mit 4 MB aus dem Generator. Neu kodiert ohne Tonspur
+9. **Video verkleinern (empfohlen):** Die Schleife kommt mit 4 MB aus dem Generator. Neu kodiert ohne Tonspur
    sind etwa 1 MB möglich, gleicher Dateiname, danach neu bauen:
    `ffmpeg -i zentriboy-im-einsatz.mp4 -an -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart out.mp4`
+10. **Nutzungsrechte KI-Bilder:** Die Visualisierung entstand im Higgsfield-Free-Plan. Prüfen, ob dessen Bedingungen
+    eine kommerzielle Nutzung erlauben (ggf. mit Basic-Plan neu erzeugen).
+11. **Werbeaussagen** aus der alten Website (z. B. „ersetzt den Zentrierständer vollkommen“, „Sie können keinen
+    Fehler mehr machen“) auf Belegbarkeit prüfen (§ 5 UWG).
 
 ## KI-Assets (Higgsfield, Oktober 2026)
 

@@ -7,16 +7,19 @@ import Steps from '@/components/product/Steps.astro';
 import TensiometerSchematic from '@/components/product/TensiometerSchematic.astro';
 import DataSheet from '@/components/product/DataSheet.astro';
 import NextSheet from '@/components/product/NextSheet.astro';
-import { products, formatPrice } from '@/data/products';
+import { products, formatPrice, productJsonLd } from '@/data/products';
 import foto from '@/assets/products/tensiometer.jpg';
 
 const tm = products.tensiometer;
+const site = Astro.site!;
+const productData = productJsonLd(tm, { image: new URL(foto.src, site), url: new URL(Astro.url.pathname, site), site });
 ---
 
 <BaseLayout
   title="Tensiometer"
   description="Das Braun Tensiometer misst die Speichenspannung: einklicken, Wert ablesen, mit der mitgelieferten Tabelle vergleichen. 145,67 € inkl. MwSt."
   theme="graphite"
+  structuredData={[productData]}
 >
   <section class="tmh" data-module="spoke" data-spoke-a="-0.03,0.74" data-spoke-b="1.03,0.3" aria-labelledby="tmh-title">
     <h1 id="tmh-title" class="tmh__title">
@@ -42,7 +45,7 @@ const tm = products.tensiometer;
     <div class="tmh__photo" data-reveal="clip">
       <Photo image={foto} alt="Braun Tensiometer mit Messuhr, in eine Speiche eingeklickt" sizes="250px" ratio="4 / 3" />
     </div>
-    <button class="visually-hidden" type="button" data-spoke-pluck>Speiche anschlagen</button>
+    <button class="focus-pill" type="button" data-spoke-pluck>Speiche anschlagen</button>
   </section>
 
   <Steps id="tm-steps" title="So funktioniert das Tensiometer" steps={tm.steps}>

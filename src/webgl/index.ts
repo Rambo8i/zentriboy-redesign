@@ -24,7 +24,9 @@ async function load(): Promise<Stage | null> {
       const canvas = document.querySelector<HTMLCanvasElement>('canvas.stage');
       if (!canvas || !supportsWebGL()) throw new Error('WebGL nicht verfügbar');
       const { Stage } = await import('./stage');
-      stage = new Stage(canvas);
+      const created = new Stage(canvas);
+      await created.init();
+      stage = created;
       if (import.meta.env.DEV) (window as unknown as { __zbStage: Stage }).__zbStage = stage;
       return stage;
     })().catch((err) => {

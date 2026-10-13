@@ -15,8 +15,8 @@ const { href, name, note, expand = true } = Astro.props;
 <section class="next" aria-label="Weiter">
   <a class="next__link wrap" href={href} data-cursor="view" data-transition={expand ? 'expand' : undefined}>
     <span class="next__note t-mono t-muted">{note}</span>
-    <span class="next__name">
-      <span class="next__text">{name}</span>
+    <span class="next__name" style={`--len:${name.length}`}>
+      <span class="next__text">{" "}{name}</span>
       <span class="next__knob" data-magnetic="0.3"><Icon name="arrow-right" size="42%" /></span>
     </span>
   </a>
@@ -35,17 +35,20 @@ const { href, name, note, expand = true } = Astro.props;
     padding-block: clamp(4rem, 9vw, 8rem);
   }
 
+  /* Bricht um, wenn Wort und Knopf nicht nebeneinander passen (320 px) */
   .next__name {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 1.5rem 2rem;
   }
 
   .next__text {
     font-stretch: 125%;
     font-weight: 800;
-    font-size: clamp(2.75rem, 9vw, 10rem);
+    /* gemessen: „Tensiometer“ = 7,36 em bei 125 % Breite, also etwa 0,67 em je Zeichen */
+    font-size: min(clamp(2.75rem, 9vw, 10rem), calc((100vw - 2 * var(--margin)) / (var(--len, 11) * 0.7)));
     line-height: 0.9;
     letter-spacing: -0.04em;
     transition: transform 0.9s var(--ease-out);

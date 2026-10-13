@@ -165,7 +165,14 @@ const year = new Date().getFullYear();
   .sf__legal-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 1rem;
+    gap: 0 1rem;
+  }
+
+  /* Trefferfläche mindestens 24 px hoch (WCAG 2.5.8), ohne die Optik zu ändern */
+  .sf__legal-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
   }
 
   .sf__cell--top {

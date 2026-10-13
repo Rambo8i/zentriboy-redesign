@@ -69,6 +69,10 @@ const { title, description } = Astro.props;
     line-height: 1.5;
   }
 
+  .legal__body :global(.note ul) {
+    margin-top: 0.6rem;
+  }
+
   @media (max-width: 1023px) {
     .legal__body {
       grid-column: 1 / -1;

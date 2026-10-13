@@ -71,8 +71,28 @@ export function labelForPath(pathname: string): string {
  */
 export const legal = {
   privacyReviewed: false,
-  privacyDate: 'September 2026',
-} as const;
+  privacyDate: 'Oktober 2026',
+  /**
+   * Hosting für die Datenschutzerklärung (Art. 13 DSGVO: Empfänger, Drittland, Speicherdauer).
+   * Fehlt, bis feststeht, wo die Website betrieben wird. Die Live-Vorschau liegt derzeit bei
+   * Vercel Inc. (USA), der echte Betrieb ist auf dem Webspace der Braun GmbH geplant.
+   * Erst nach Prüfung eintragen, nichts vermuten.
+   */
+  hosting: null as null | {
+    name: string;
+    address: string;
+    /** Speicherdauer der Server-Protokolle, wie vom Anbieter angegeben */
+    logRetention: string;
+    /** Rechtsgrundlage bzw. Garantie bei Übermittlung in ein Drittland, sonst null */
+    thirdCountry: string | null;
+    privacyUrl: string;
+  },
+  /**
+   * Hinweis zur Verbraucherstreitbeilegung (§ 36 VSBG), Pflicht ab mehr als 10 Beschäftigten.
+   * Die Formulierung ist eine Entscheidung der Braun GmbH (teilnehmen ja/nein).
+   */
+  consumerDispute: null as null | string,
+};
 
 /** mailto-Link mit Betreff und optionalem Text (sauber kodiert). */
 export function mailto(subject: string, body?: string): string {

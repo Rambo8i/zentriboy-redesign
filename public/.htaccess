@@ -24,7 +24,22 @@ ErrorDocument 404 /404.html
   <If "%{REQUEST_URI} =~ m#^/_astro/#">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </If>
+
+  # Sicherheits-Header (wie in vercel.json)
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+
+  # Erst aktivieren, wenn die Seite dauerhaft und vollständig per HTTPS läuft (sonst sperrt HSTS Besucher aus):
+  # Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
 </IfModule>
+
+# HTTP auf HTTPS umleiten – erst aktivieren, wenn ein gültiges Zertifikat für die Domain eingerichtet ist:
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json

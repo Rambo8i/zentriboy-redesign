@@ -35,6 +35,20 @@ export const readingAt = (offset: number): number =>
 
 let running = false;
 
+/*
+ * WCAG 2.2.2: Was sich von selbst bewegt, darf höchstens 5 s laufen, sonst braucht es eine Pause.
+ * Die Grunddrehung läuft deshalb nach dem Laden, nach einem Seitenwechsel oder nach dem letzten
+ * Scrollen noch 3,5 s und klingt bis 5 s aus. Scrollen dreht das Rad weiterhin direkt.
+ */
+const IDLE_FADE_START = 3.5;
+const IDLE_FADE_END = 5;
+let idle = 0;
+
+/** Grunddrehung erneut für ein paar Sekunden anstoßen (z. B. beim Seitenwechsel). */
+export function wakeWheel(): void {
+  idle = 0;
+}
+
 /** Startet die Drehung einmalig (idempotent). */
 export function ensureWheelClock(): void {
   if (running) return;
@@ -46,7 +60,10 @@ export function ensureWheelClock(): void {
     const dt = Math.min(deltaMs / 1000, 0.05);
     if (!still) {
       const v = Math.abs(getScrollVelocity());
-      wheelState.angle += (wheelState.spin + Math.min(v * 0.05, 6)) * dt;
+      idle = v > 0.5 ? 0 : idle + dt;
+      const t = Math.min(1, Math.max(0, (idle - IDLE_FADE_START) / (IDLE_FADE_END - IDLE_FADE_START)));
+      const base = wheelState.spin * (1 - t * t * (3 - 2 * t));
+      wheelState.angle += (base + Math.min(v * 0.05, 6)) * dt;
       wheelState.disturb *= Math.exp(-dt * 1.6);
     }
     wheelState.reading = readingAt(0);

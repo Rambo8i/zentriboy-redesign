@@ -16,10 +16,11 @@ const isCurrent = (href: string) => {
 ---
 
 <header class="header" data-module="header" data-on={theme}>
-  <a href="/" class="header__brand" aria-label="Braun GmbH, zur Startseite" aria-current={path === '/' ? 'page' : undefined}>
+  <a href="/" class="header__brand" aria-current={path === '/' ? 'page' : undefined}>
     <Mark size="1.6rem" />
     <span class="header__name">Braun</span>
-    <span class="header__legal">GmbH</span>
+    <span class="header__legal">{" "}GmbH</span>
+    <span class="visually-hidden">, zur Startseite</span>
   </a>
 
   <nav class="header__nav" aria-label="Hauptnavigation">

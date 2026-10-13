@@ -76,8 +76,9 @@ export default function dial(el: HTMLElement) {
   const tick = (dt: number, time: number) => {
     elapsed += dt;
     if (!interacting && !reduce) {
-      // leichtes „Atmen“ eines aufgesetzten Messtasters
-      deviation = 0.09 * Math.sin(elapsed * 0.9) * Math.sin(elapsed * 0.37 + 1.2);
+      // leichtes „Atmen“ eines aufgesetzten Messtasters, nach 5 s Ruhe (WCAG 2.2.2: keine Dauerbewegung)
+      const fade = Math.min(1, Math.max(0, (elapsed - 3.5) / 1.5));
+      deviation = (1 - fade) * 0.09 * Math.sin(elapsed * 0.9) * Math.sin(elapsed * 0.37 + 1.2);
     }
     needle.target = deviation;
     needle.step(dt);
@@ -95,7 +96,10 @@ export default function dial(el: HTMLElement) {
   const stopView = inView(
     el,
     (visible) => {
-      if (visible && !stopTick) stopTick = onTick(tick);
+      if (visible && !stopTick) {
+        elapsed = 0;
+        stopTick = onTick(tick);
+      }
       else if (!visible && stopTick) {
         stopTick();
         stopTick = null;

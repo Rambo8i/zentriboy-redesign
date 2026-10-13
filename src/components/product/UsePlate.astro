@@ -143,7 +143,8 @@ const widths = [640, 960, 1280, 1920, 2560].filter((w) => w <= image.width);
     bottom: clamp(0.75rem, 1.6vw, 1.5rem);
     padding: 0.4rem 0.65rem 0.35rem;
     color: var(--c-light);
-    background: color-mix(in oklab, var(--c-graphite) 78%, transparent);
+    /* 92 %: Kontrast bleibt auch über hellen Bildstellen über 4,5 : 1 */
+    background: color-mix(in oklab, var(--c-graphite) 92%, transparent);
     pointer-events: none;
   }
 

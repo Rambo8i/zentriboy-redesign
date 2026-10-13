@@ -17,7 +17,8 @@ const around = [
   { work: workById('0086'), x: -36, y: -30, w: 17, depth: 1.25 },
   { work: workById('0224'), x: 33, y: -34, w: 13, depth: 0.9 },
   { work: workById('0333'), x: 38, y: 12, w: 19, depth: 1.4 },
-  { work: workById('0291'), x: -31, y: 3, w: 12, depth: 1.05 },
+  // Liegt bewusst über der Textzone: geprüft frei von Überschrift und Link bei 1024–2560 px Breite
+  { work: workById('0291'), x: -30, y: -10, w: 12, depth: 1.05 },
   { work: workById('0298'), x: 4, y: 39, w: 14, depth: 0.8 },
   { work: workById('0336'), x: 21, y: 40, w: 10, depth: 1.2 },
   { work: workById('0209'), x: 9, y: -44, w: 12, depth: 0.7 },
@@ -104,16 +105,27 @@ const around = [
     max-width: 34rem;
   }
 
-  /* Dezente Abdunklung hinter dem Text – Lesbarkeit vor Bild */
+  /*
+   * Abdunklung hinter dem Text – Lesbarkeit vor Bild. Unter der ganzen Textspalte mindestens 90 %
+   * Hintergrundfarbe, damit der Kontrast auch dann hält, wenn das gezoomte Mittelbild darunterliegt
+   * (heller Text auf weißem Metall: mit 90 % Abdeckung noch über 5 : 1). Rechts der Spalte läuft sie aus.
+   */
   .wz__stage::after {
     content: '';
     position: absolute;
     left: 0;
     bottom: 0;
     z-index: 1;
-    width: 55vw;
-    height: 60%;
-    background: radial-gradient(ellipse at 0% 100%, color-mix(in oklab, var(--bg) 88%, transparent) 0%, transparent 70%);
+    width: calc(var(--margin) + 34rem + 14vw);
+    /* mindestens 30rem hoch, damit Überschrift und Link auch in flachen Fenstern voll abgedeckt sind */
+    height: min(100%, max(62%, 30rem));
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--bg) 90%, transparent) 0,
+      color-mix(in oklab, var(--bg) 90%, transparent) calc(var(--margin) + 34rem + 1.5rem),
+      transparent 100%
+    );
+    mask-image: linear-gradient(to top, #000 calc(100% - 6rem), transparent);
     pointer-events: none;
   }
 

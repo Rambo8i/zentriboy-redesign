@@ -2,8 +2,8 @@
 /**
  * Datenschutzerklärung – ENTWURF auf Basis dessen, was diese Website technisch tut
  * (keine Cookies, kein Tracking, Schriften lokal, sessionStorage für die Startanimation).
- * Vor der Veröffentlichung rechtlich prüfen und den Hosting-Anbieter ergänzen,
- * dann `legal.privacyReviewed` in data/site.ts auf true setzen.
+ * Vor der Veröffentlichung rechtlich prüfen, `legal.hosting` in data/site.ts ausfüllen,
+ * dann `legal.privacyReviewed` auf true setzen.
  */
 import LegalPage from '@/components/layout/LegalPage.astro';
 import { company, legal } from '@/data/site';
@@ -13,8 +13,8 @@ import { company, legal } from '@/data/site';
   {
     !legal.privacyReviewed && (
       <p class="note">
-        Entwurf: Diese Datenschutzerklärung muss vor der Veröffentlichung rechtlich geprüft und um den Hosting-Anbieter
-        ergänzt werden.
+        Entwurf: Diese Datenschutzerklärung muss vor der Veröffentlichung rechtlich geprüft werden.
+        {!legal.hosting && ' Die Angaben zum Hosting fehlen noch.'}
       </p>
     )
   }
@@ -34,15 +34,33 @@ import { company, legal } from '@/data/site';
     anderen Daten zusammengeführt.
   </p>
 
+  <h2>Hosting</h2>
+  {
+    legal.hosting ? (
+      <p>
+        Die Website wird bei {legal.hosting.name}, {legal.hosting.address} betrieben. Der Anbieter verarbeitet die oben
+        genannten Zugriffsdaten in unserem Auftrag. Die Server-Protokolle werden {legal.hosting.logRetention}
+        gespeichert.
+        {legal.hosting.thirdCountry && ` Dabei können Daten in ein Drittland übermittelt werden (${legal.hosting.thirdCountry}).`}{' '}
+        Weitere Informationen: <a href={legal.hosting.privacyUrl}>Datenschutzhinweise des Anbieters</a>.
+      </p>
+    ) : (
+      <p class="note">
+        Angaben fehlen: Name und Anschrift des Hosting-Anbieters, Speicherdauer der Server-Protokolle,
+        Auftragsverarbeitung und gegebenenfalls Übermittlung in ein Drittland.
+      </p>
+    )
+  }
+
   <h2>Keine Cookies, kein Tracking</h2>
   <p>
-    Diese Website setzt keine Cookies und verwendet keine Analyse-, Werbe- oder Tracking-Dienste. Schriften und alle
-    übrigen Dateien werden von unserem eigenen Server geladen, es werden keine Daten an Dritte übertragen.
+    Diese Website setzt keine Cookies und verwendet keine Analyse-, Werbe- oder Tracking-Dienste. Schriften, Skripte,
+    Bilder und Videos werden vom Server dieser Website ausgeliefert; Inhalte anderer Anbieter werden nicht eingebunden.
   </p>
   <p>
     Damit die Startanimation nicht bei jedem Seitenaufruf erneut erscheint, wird im Sitzungsspeicher Ihres Browsers
-    (sessionStorage) vermerkt, dass sie bereits gezeigt wurde. Dieser Eintrag enthält keine personenbezogenen Daten und
-    wird beim Schließen des Browserfensters automatisch gelöscht.
+    (sessionStorage, Eintrag „zb-intro“) vermerkt, dass sie bereits gezeigt wurde. Dieser Eintrag enthält keine
+    personenbezogenen Daten, wird nicht an uns übertragen und beim Schließen des Browserfensters automatisch gelöscht.
   </p>
 
   <h2>Kontakt per E-Mail, Telefon oder Fax</h2>

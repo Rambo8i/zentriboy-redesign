@@ -15,6 +15,7 @@ import { gsap, SCRAMBLE_CHARS } from '@/lib/gsap';
 import { split } from '@/lib/split';
 import { MM_CONDITIONS } from '@/lib/motion';
 import type { Cleanup } from '@/lib/lifecycle';
+import { onceInView } from '@/lib/observe';
 
 const num = (v: string | undefined, fallback = 0) => (v ? parseFloat(v) || fallback : fallback);
 const startOf = (el: HTMLElement, fallback = 'top 88%') => el.dataset.revealStart || fallback;
@@ -43,15 +44,11 @@ export function initReveals(root: ParentNode = document): Cleanup {
 
   mm.add(MM_CONDITIONS, (ctx) => {
     const reduce = Boolean(ctx.conditions?.reduce);
+    const pending: Cleanup[] = [];
 
-    for (const el of targets) {
+    const setup = (el: HTMLElement) => {
       const kind = el.dataset.reveal;
       const delay = num(el.dataset.revealDelay);
-
-      if (reduce) {
-        gsap.set(el, { visibility: 'visible', clearProps: 'clipPath,transform,opacity' });
-        continue;
-      }
 
       switch (kind) {
         case 'lines': {
@@ -166,9 +163,24 @@ export function initReveals(root: ParentNode = document): Cleanup {
           break;
         }
       }
+    };
+
+    /*
+     * Sofort zerlegt wird nur, was beim Start in Reichweite ist (bis 1,5 Bildschirmhöhen). Der Rest
+     * folgt, kurz bevor er ins Bild kommt. So verteilt sich die SplitText-Arbeit, statt beim Intro
+     * den Hauptthread am Stück zu blockieren (Lighthouse: lange Aufgabe von rund 570 ms, mobil).
+     */
+    for (const el of targets) {
+      if (reduce) {
+        gsap.set(el, { visibility: 'visible', clearProps: 'clipPath,transform,opacity' });
+        continue;
+      }
+      if (el.getBoundingClientRect().top < window.innerHeight * 1.5) setup(el);
+      else pending.push(onceInView(el, () => ctx.add(() => setup(el)), { rootMargin: '100% 0px' }));
     }
 
     return () => {
+      pending.forEach((stop) => stop());
       splits.forEach((s) => s.revert());
       splits.length = 0;
     };
