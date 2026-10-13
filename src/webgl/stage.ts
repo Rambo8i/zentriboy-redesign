@@ -15,6 +15,13 @@ import { runoutProfile } from '@/lib/math';
 import { onTick } from '@/lib/ticker';
 import { isFinePointer, prefersReducedMotion, qualityTier } from '@/lib/motion';
 
+/** Software-Rasterisierung erkennen (SwiftShader, llvmpipe, Microsoft Basic Render Driver). */
+function isSoftwareRenderer(gl: WebGLRenderingContext | WebGL2RenderingContext): boolean {
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  const name = String(info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+  return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
+}
+
 /** Hauptthread kurz freigeben – auch im Hintergrund-Tab (kein requestAnimationFrame). */
 const yieldToMain = (): Promise<void> => {
   const scheduler = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
@@ -78,10 +85,15 @@ export class Stage {
       powerPreference: 'high-performance',
       premultipliedAlpha: true,
     });
+    // Ohne GPU-Beschleunigung (Software-Renderer) die einfache Stufe: physikalische Materialien
+    // kompilieren dort sekundenlang und blockieren den Hauptthread.
+    if (isSoftwareRenderer(this.renderer.getContext())) this.tier = 'low';
+
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 1.05;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, tier === 'high' ? 1.75 : tier === 'medium' ? 1.35 : 1));
+    const dprCap = this.tier === 'high' ? 1.75 : this.tier === 'medium' ? 1.35 : 1;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
 
     this.camera.position.set(0, 0, CAM_Z);
   }
@@ -99,7 +111,9 @@ export class Stage {
     // Spiegelungen aus einer nachgebauten Werkstatt (Fenster links wie in der Produktvisualisierung)
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     const workshop = new WorkshopEnvironment();
-    this.scene.environment = pmrem.fromScene(workshop, 0.02).texture;
+    // Auf schwächeren Stufen halbe Auflösung: Die Spiegelungen sind ohnehin weich, die Vorfilterung viermal günstiger
+    const size = tier === 'high' ? 256 : 128;
+    this.scene.environment = pmrem.fromScene(workshop, 0.02, 0.1, 100, { size }).texture;
     this.scene.environmentIntensity = 1;
     workshop.dispose();
     pmrem.dispose();
